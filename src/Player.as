@@ -117,11 +117,11 @@ package
 						{
 							var tile:TileBackground = _board.tileMatrix[incrementX][incrementY];
 							
-							if( tile.type != 0 )
+							if( tile.moveableTile())
 							{
 								// Create explosion
 								var explosion:Explosion = new Explosion(tile.x,tile.y,explodeDelayArray[(i*3) + j]);
-								PlayState.groupPlayerBehind.add(explosion);
+								PlayState.groupBoardSort.add(explosion);
 							}
 						}
 					}
@@ -179,8 +179,13 @@ package
 			else if ( y < moveToY )
 				y += 1 * speed;
 			
-			if( x == moveToX && y == moveToY )
-				moving = false;
+			if( x > moveToX - 1.0 && x < moveToX + 1.0 )
+			{
+				if( y > moveToY - 1.0 && y < moveToY + 1.0 ) 
+				{
+					moving = false;
+				}
+			}
 		}
 		
 		public function setTilePosition( x:int, y:int ):void
@@ -279,6 +284,7 @@ package
 		
 		public function pulse():void
 		{
+			return;
 			var osc:Number = 1.0 - (1 + Math.sin( time * 3.0 ) );										
 			alpha = 1.0 - 0.25*osc;
 			

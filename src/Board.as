@@ -18,8 +18,9 @@ package    {
 		public var widthInTiles:int;
 		
 		public var time:Number = 0.0;
-		
+
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Ground.txt',mimeType="application/octet-stream")] private var TxtMap:Class;
+		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Enemies.txt',mimeType="application/octet-stream")] private var TxtEnemies:Class;
 		
 		public function Board()
 		{
@@ -32,6 +33,33 @@ package    {
 			resetTiles();
 			
 			time += FlxG.elapsed;
+		}
+		
+		
+		public function createEnemies( player:Player ):void
+		{
+			var mapData:String = new TxtEnemies;
+			
+			//Figure out the map dimensions based on the data string
+			var columns:Array;
+			var rows:Array = mapData.split("\n");
+			var column:uint;
+			
+			var emptyTile:TileBackground = new TileBackground( 0, 0, 0, 0, 0, this);
+			
+			for( var x:int = 0; x < rows.length - 1; x++)
+			{
+				columns = rows[x].split(",");
+				for( var y:int = 0; y < columns.length; y++)
+				{
+					if( columns[y] != 0 )
+					{
+						var enemy:Enemy = new Enemy(x,y,this,player);
+						PlayState.groupBoardSort.add(enemy);
+					}
+
+				}
+			}
 		}
 		
 		public function loadMap( MapData:String ):void
@@ -66,7 +94,15 @@ package    {
 					if( type > 0 )
 					{
 						var tile:TileBackground = new TileBackground( columns[y], startX + x*offsetX + y*isometrixOffsetY,  startY + y*offsetY + x*isometrixOffsetX, x, y, this);					
-						PlayState.groupBoard.add(tile);
+						
+						if( columns[y] == 1 )
+						{
+							PlayState.groupBoard.add(tile);
+						}
+						else
+						{
+							PlayState.groupBoardSort.add(tile);
+						}
 						row.push(tile);
 					}
 					else

@@ -1,6 +1,9 @@
 package    {
 		
-	import org.flixel.*;
+	import org.flixel.FlxG;
+	import org.flixel.FlxGroup;
+	import org.flixel.FlxSprite;
+	import org.flixel.FlxText;
 	
 	public class Level_Main extends Level{
 	
@@ -31,6 +34,8 @@ package    {
 		
 		public var board:Board;
 		
+		public var enemy:Enemy;
+		
 		public function Level_Main( group:FlxGroup ) {
 			
 			levelSizeX = 1280;
@@ -39,25 +44,28 @@ package    {
 			// Create board
 			board = new Board();
 			
-			// Create finn
+			// Create player
 			player = new Player(0,0,board);
-			PlayState.groupPlayer.add(player);
-	
+			PlayState.groupBoardSort.add(player);
+			board.createEnemies(player);
+
 			// Timer
 			startTime = 1.0;
 			endTime = 3.0;
 			timer = MAX_TIME;
+			
+			points = 0;
+			
 			timerText = new FlxText(0, 0, FlxG.width, "0:00");
 			timerText.setFormat(null,32,TEXT_COLOR,"left");
 			timerText.scrollFactor.x = timerText.scrollFactor.y = 0;
-			PlayState.groupBackground.add(timerText);
+//			PlayState.groupBackground.add(timerText);
 			
 			// Points
-			points = 0;
 			pointsText = new FlxText(0, 0, FlxG.width, "0");
 			pointsText.setFormat(null,32,TEXT_COLOR,"right");
 			pointsText.scrollFactor.x = pointsText.scrollFactor.y = 0;
-			PlayState.groupBackground.add(pointsText);
+//			PlayState.groupBackground.add(pointsText);
 			
 //			var backgroundSprite:FlxSprite;
 //			backgroundSprite = new FlxSprite(0,0);
@@ -101,6 +109,8 @@ package    {
 		
 		private function updateTimer():void
 		{
+			return; 
+			
 			// Timer
 			var minutes:uint = timer/60;
 			var seconds:uint = timer - minutes*60;

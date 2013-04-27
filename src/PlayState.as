@@ -1,6 +1,9 @@
 package
 {
-	import org.flixel.*;
+	import org.flixel.FlxCamera;
+	import org.flixel.FlxG;
+	import org.flixel.FlxGroup;
+	import org.flixel.FlxSortGroup;
 	
 	public class PlayState extends BasePlayState
 	{
@@ -10,6 +13,7 @@ package
 		public static var groupBackground:FlxGroup;
 		public static var groupPlayerBehind:FlxGroup;
 		public static var groupBoard:FlxGroup;
+		public static var groupBoardSort:FlxGroup;
 		public static var groupCollects:FlxGroup;
 		public static var groupPlayer:FlxGroup;
 		public static var groupForeground:FlxGroup;
@@ -22,6 +26,7 @@ package
 			groupBackground = new FlxGroup;
 			groupPlayerBehind = new FlxGroup;
 			groupBoard = new FlxGroup;
+			groupBoardSort = new FlxSortGroup;
 			groupPlayer = new FlxGroup;
 			groupCollects = new FlxGroup;
 			groupForeground = new FlxGroup;
@@ -33,6 +38,7 @@ package
 			this.add(groupLowest);
 			this.add(groupBackground);
 			this.add(groupBoard);
+			this.add(groupBoardSort);
 			this.add(groupPlayerBehind);
 			this.add(groupPlayer);
 			this.add(groupCollects);
@@ -40,7 +46,7 @@ package
 		}
 		
 		override public function update():void
-		{			
+		{					
 			// Camera
 			if( _currLevel.player != null )
 			{

@@ -7,6 +7,7 @@ package
 		[Embed(source='../data/tile-empty.png')] private var ImgTileEmpty:Class;
 		[Embed(source='../data/tile-ground.png')] private var ImgTileGround:Class;
 		[Embed(source='../data/tile-crate.png')] private var ImgTileCrate:Class;
+		[Embed(source='../data/tile-lightpost.png')] private var ImgTileLightPost:Class;
 		
 		public var type:int  = 0;
 		public var baseType:int = -1;
@@ -51,6 +52,13 @@ package
 					offset.y = 16;
 					loadGraphic(ImgTileCrate, true, true, width, height);
 					break;
+				case 4:
+					width = 84;
+					height = 136;
+					offset.x = 26;
+					offset.y = 104;
+					loadGraphic(ImgTileLightPost, true, true, width, height);
+					break;
 				default:
 					break;
 			}
@@ -68,11 +76,11 @@ package
 		
 		override public function update():void
 		{
-			if( type == 2 )
+			if( type == 4 )
 			{
 				if( _board )
 				{
-					_board.lightTile( _xIndex, _yIndex, 3, false );
+					_board.lightTile( _xIndex, _yIndex, 5, false );
 				}
 			}
 			super.update();
