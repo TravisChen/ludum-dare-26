@@ -3,13 +3,13 @@
 package  {
 	import com.adamatomic.flixel.*;
 	
-	public class MapEvolution extends MapBase {
+	public class MapMoonshine extends MapBase {
 		//Media content declarations
-		[Embed(source="MapCSV_Evolution_Ground.txt", mimeType="application/octet-stream")] public var CSV_Ground:Class;
+		[Embed(source="MapCSV_Moonshine_Ground.txt", mimeType="application/octet-stream")] public var CSV_Ground:Class;
 		[Embed(source="map-tiles.png")] public var Img_Ground:Class;
 
 		
-		public function MapEvolution() {
+		public function MapMoonshine() {
 
 			_setCustomValues();
 

@@ -19,6 +19,7 @@ package
 		public var foreground:Boolean = true;
 		
 		public var time:Number = 0.0;
+		public var playerLightAmount:int = 4;
 		
 		private var _board:Board;
 		public var tileX:Number;
@@ -82,85 +83,17 @@ package
 		
 		public function moveToTile( x:int, y:int ):void
 		{
-			if( validTile( x, y ) )
+			if( _board.validTile( x, y ) )
 			{
 				var tile:TileBackground = _board.tileMatrix[x][y];
 				
-				if( tile.type != 0 )
+				if( tile.moveableTile() )
 				{
 					tileX = x;
 					tileY = y;
 					moveTo = tile;
 					moving = true;
 				}
-			}
-		}
-		
-		public function resetTiles():void
-		{
-			for( var x:int = 0; x < _board.tileMatrix.length; x++ )
-			{
-				for( var y:int = 0; y < _board.tileMatrix[x].length; y++ )
-				{
-					var tile:TileBackground = _board.tileMatrix[x][y];
-					tile.alpha = 0.0;
-					tile.alphaSet = false;
-					tile.visible = false;
-				}	
-			}
-		}
-		
-		public function validTile( x:int, y:int ):Boolean
-		{
-			if( x >= 0 && x < _board.tileMatrix.length )
-			{
-				if( y >= 0 && y < _board.tileMatrix[x].length )
-				{
-					return true;
-				}
-			}
-			
-			return false;
-		}
-		
-		public function distanceTwoPoints(x1:Number, x2:Number,  y1:Number, y2:Number):Number 
-		{
-			var dx:Number = x1-x2;
-			var dy:Number = y1-y2;
-			return Math.sqrt(dx * dx + dy * dy);
-		}
-		
-		public function lightTile( origX:int, origY:int ): void 
-		{
-			var checkDistance:int = 10;
-			var maxDistance:int = 4;
-			if( kicking )
-			{
-				maxDistance = 10;
-			}
-			var oscAmount:Number = 3.0;
-			var origTile:TileBackground = _board.tileMatrix[origX][origY];
-			
-			for( var x:int = origX - checkDistance; x < origX + checkDistance; x++ )
-			{
-				for( var y:int = origY - checkDistance; y < origY + checkDistance; y++ )
-				{
-					if( validTile( x, y ) )
-					{
-						
-						var distance:Number = distanceTwoPoints( origX, x, origY, y );
-						if( distance < maxDistance )
-						{
-							var tile:TileBackground = _board.tileMatrix[x][y];
-							var osc:Number = (1 + Math.sin( time * oscAmount ) );										
-							var alpha:Number = ( 1 - Math.abs( distance / ( maxDistance + osc ) ) );
-							tile.visible = true;
-							tile.alpha = Math.pow(alpha, 3);
-							
-							tile.alphaSet = false;
-						}
-					}
-				}	
 			}
 		}
 		
@@ -173,9 +106,6 @@ package
 			
 			var ex:Number = 0.03;
 			var explodeDelayArray:Array = new Array(ex*2,ex,0,ex*3,ex*8,ex*7,ex*4,ex*5,ex*6);
-			
-			FlxG.play(SndSlash,0.35);
-			FlxG.play(SndSlashBacking,0.25);
 			
 			for( var i:int = 0; i < 3; i++ )
 			{
@@ -202,37 +132,37 @@ package
 			}
 		}
 		
-//		public function updateZOrdering():void
-//		{
-//			var rightX:int = tileX + 1;
-//			var downY:int = tileY + 1;
-//			var behind:Boolean = false;
-//			if( rightX < _board.tileMatrix.length )
-//			{
-//				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
-//			}
-//			
-//			if( downY < _board.tileMatrix.length )
-//			{
-//				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
-//			}
-//			
-//			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
-//			{
-//				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
-//			}
-//			
-//			if( behind )
-//			{
-//				PlayState.groupPlayer.remove( this );
-//				PlayState.groupPlayerBehind.add( this );
-//			}
-//			else
-//			{
-//				PlayState.groupPlayerBehind.remove( this );
-//				PlayState.groupPlayer.add( this );
-//			}
-//		}
+		public function updateZOrdering():void
+		{
+			var rightX:int = tileX + 1;
+			var downY:int = tileY + 1;
+			var behind:Boolean = false;
+			if( rightX < _board.tileMatrix.length )
+			{
+				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
+			}
+			
+			if( downY < _board.tileMatrix.length )
+			{
+				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
+			}
+			
+			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
+			{
+				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
+			}
+			
+			if( behind )
+			{
+				PlayState.groupPlayer.remove( this );
+				PlayState.groupPlayerBehind.add( this );
+			}
+			else
+			{
+				PlayState.groupPlayerBehind.remove( this );
+				PlayState.groupPlayer.add( this );
+			}
+		}
 		
 		public function updateMovement():void
 		{			
@@ -262,8 +192,7 @@ package
 			this.x = tile.x;
 			this.y = tile.y;
 			
-			resetTiles();
-			lightTile( x, y );
+			_board.lightTile( x, y, playerLightAmount, false );
 			
 			super.update();
 		}
@@ -348,8 +277,20 @@ package
 			}
 		}
 		
+		public function pulse():void
+		{
+			var osc:Number = 1.0 - (1 + Math.sin( time * 3.0 ) );										
+			alpha = 1.0 - 0.25*osc;
+			
+			if( kicking )
+			{
+				alpha = 1.0;
+			}
+		}
+		
 		override public function update():void
 		{	
+			pulse();
 			time += FlxG.elapsed;
 			
 			if( startTime > 0 )
@@ -366,12 +307,11 @@ package
 
 			updateWasd();
 			updateSpace();
-			
+						
 			super.update();			
 
 			// Lighting
-			resetTiles();
-			lightTile( tileX, tileY );
+			_board.lightTile( tileX, tileY, playerLightAmount, kicking );
 			
 			if( moving )
 			{

@@ -64,7 +64,7 @@ package    {
 //			backgroundSprite.loadGraphic(ImgBackground, true, true, levelSizeX, levelSizeY);	
 //			PlayState.groupLowest.add(backgroundSprite);
 
-			FlxG.playMusic(SndSong,1.0);
+//			FlxG.playMusic(SndSong,1.0);
 			
 			// Round end
 			roundEnd = false;
