@@ -4,7 +4,9 @@ package    {
 	
 	public class Level_Menu extends Level{
 		
-		[Embed(source = '../data/wasd.png')] private var ImgWasd:Class;
+		[Embed(source = '../data/game-bg.png')] private var ImgBackground:Class;
+		[Embed(source = '../data/adventure.png')] private var ImgAdventure:Class;
+		[Embed(source = '../data/space-big.png')] private var ImgWasd:Class;
 		
 		public var wasd:FlxSprite;
 		public var wasdFadeInTime:Number;
@@ -12,13 +14,14 @@ package    {
 		public var wasdBounceToggle:Boolean;
 		
 		public var startTime:Number;
+		public const TITLE_COLOR:uint = 0x00C0F8;
 
 		public function Level_Menu( group:FlxGroup ) {
 			
 			super();
 			
-			levelSizeX = 320;
-			levelSizeY = 240;
+			levelSizeX = 1280;
+			levelSizeY = 800;
 			
 			startTime = 1.0;
 			
@@ -41,6 +44,27 @@ package    {
 		}
 		
 		public function createForegroundAndBackground():void {
+			
+//			var backgroundSprite:FlxSprite;
+//			backgroundSprite = new FlxSprite(0,0);
+//			backgroundSprite.loadGraphic(ImgBackground, true, true, levelSizeX, levelSizeY);	
+//			PlayState.groupLowest.add(backgroundSprite);
+//			
+//			var introPlayer:PlayerIntro = new PlayerIntro(FlxG.width/2 - 110,FlxG.height/2 + 6);
+//			PlayState.groupBackground.add(introPlayer);
+//			
+//			backgroundSprite = new FlxSprite(0,0);
+//			backgroundSprite.loadGraphic(ImgAdventure, true, true, levelSizeX, levelSizeY);	
+//			PlayState.groupBackground.add(backgroundSprite);
+//			
+//			var introSplash:IntroSplash = new IntroSplash(0,0);
+//			PlayState.groupBackground.add(introSplash);
+//			
+			var title:FlxText = new FlxText(0, FlxG.height - 48, FlxG.width, "moonshine");
+			title.setFormat(null,32,TITLE_COLOR,"center");
+			title.scrollFactor.x = title.scrollFactor.y = 0;	
+			PlayState.groupForeground.add(title);
+			
 			// Create wasd
 			createWasd();
 		}
@@ -48,9 +72,9 @@ package    {
 		public function createWasd():void {
 			// Create wasd
 			wasd = new FlxSprite(0,0);
-			wasd.loadGraphic(ImgWasd, true, true, 32, 32);	
-			wasd.x = FlxG.width/2 - 16;
-			wasd.y = FlxG.height/2 - 16;
+			wasd.loadGraphic(ImgWasd, true, true, 64, 64);	
+			wasd.x = FlxG.width/2 - 32;
+			wasd.y = -12;
 			wasd.alpha = 0;
 			
 			// Add to foreground
@@ -99,7 +123,10 @@ package    {
 		}
 		
 		override public function update():void
-		{			
+		{		
+			// BG color
+			FlxG.bgColor = 0xFF3a2431;
+			
 			updateWasd();
 			
 			super.update();

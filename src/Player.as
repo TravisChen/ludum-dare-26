@@ -1,61 +1,347 @@
 package
 {
-	import org.flixel.*;
+	import org.flixel.FlxG;
+	import org.flixel.FlxSprite;
 	
 	public class Player extends FlxSprite
 	{
-		[Embed(source="../data/darwin.png")] private var ImgDarwin:Class;
+		[Embed(source='../data/player.png')] private var ImgPlayer:Class;
+		[Embed(source='../data/wasd.png')] private var ImgWasd:Class;
+		[Embed(source='../data/space.png')] private var ImgSpace:Class;
+		[Embed(source = '../data/Audio/slash-alt.mp3')] private var SndSlash:Class;
+		[Embed(source = '../data/Audio/slash.mp3')] private var SndSlashBacking:Class;
+		[Embed(source = '../data/Audio/pie-unveal.mp3')] private var SndPie:Class;
 		
 		public var startTime:Number;
+
+		public var roundOver:Boolean = false;
+		public var background:Boolean = false;
+		public var foreground:Boolean = true;
 		
-		private var jumpPower:int;
-		private var lastVelocityY:int;
-		private var jumping:Boolean;
-		public var landing:Boolean;
-		public var roundOver:Boolean;
+		public var time:Number = 0.0;
 		
-		public function Player(X:int,Y:int)
+		private var _board:Board;
+		public var tileX:Number;
+		public var tileY:Number;
+		private var moveTo:TileBackground;
+		private var moving:Boolean = false;
+		private var startedMoving:Boolean = false;
+		private var startedKick:Boolean = false;
+		private var speed:Number = 2.0;
+		private var kicking:Boolean = false;
+		
+		public var wasd:FlxSprite;
+		public var wasdFadeOutTime:Number = 0;
+		public var wasdBounceTime:Number = 0;
+		public var wasdBounceToggle:Boolean = true;
+		
+		public var space:FlxSprite;
+		public var spaceFadeOutTime:Number = 0;
+		public var spaceBounceTime:Number = 0;
+		public var spaceBounceToggle:Boolean = true;
+		public var collectedFirstPie:Boolean = false;
+		public var alphaArray:Array;
+		
+		public function Player( X:int, Y:int, board:Board )
 		{
+			_board = board;
+			
 			super(X,Y);
-			loadGraphic(ImgDarwin,true,true,32,32);
+			loadGraphic(ImgPlayer,true,true,48,38);
+			
+			alphaArray = new Array(1.0, 0.75, 0.25, 0.1);
+			
+			// Move player to Tile
+			setTilePosition( x, y );
 			
 			// Bounding box tweaks
-			width = 16;
-			height = 16;
-			offset.x = 8;
-			offset.y = 16;
+			width = 48;
+			height = 38;
+			offset.x = 14;
+			offset.y = 30;
 			
-			// Init
-			jumping = false;
-			roundOver = false;
+			// WASD
+			wasd = new FlxSprite(0,0);
+			wasd.loadGraphic(ImgWasd, true, true, 32, 32);
+			wasd.alpha = 1;
+			PlayState.groupForeground.add(wasd);
 			
-			// Start time
-			startTime = 0.5;
-			
-			lastVelocityY = velocity.y;
-			
-			// Basic player physics
-			var runSpeed:uint = 140;
-			drag.x = runSpeed*8;
-			jumpPower = 180;
-			maxVelocity.x = runSpeed;
-			maxVelocity.y = jumpPower;
-			
-			// Gravity
-			acceleration.y = 0;
+			// SPACE
+			space = new FlxSprite(0,0);
+			space.loadGraphic(ImgSpace, true, true, 32, 32);
+			space.alpha = 1;
+			PlayState.groupForeground.add(space);
 			
 			addAnimation("idle", [0]);
-			addAnimation("run", [1,2,3,4], 18);
-			addAnimation("dig", [5,6,7], 32);
-			addAnimation("jump", [8,9,10], 18, false);
-			addAnimation("land", [8], 20);
-			addAnimation("stun", [11,12], 15);
+			addAnimation("walk", [0], 20);
+			addAnimation("kick", [0], 20, false );
+			
+			// Start time
+			startTime = 0.0;
 		}
-
-		override public function update():void
+		
+		public function moveToTile( x:int, y:int ):void
+		{
+			if( x >= 0 && x < _board.tileMatrix.length )
+			{
+				if( y >= 0 && y < _board.tileMatrix[x].length )
+				{
+					var tile:TileBackground = _board.tileMatrix[x][y];	
+					tileX = x;
+					tileY = y;
+					moveTo = tile;
+					moving = true;
+				}
+			}
+		}
+		
+		public function resetTiles():void
+		{
+			for( var x:int = 0; x < _board.tileMatrix.length; x++ )
+			{
+				for( var y:int = 0; y < _board.tileMatrix[x].length; y++ )
+				{
+					var tile:TileBackground = _board.tileMatrix[x][y];
+					tile.alpha = 0.0;
+					tile.alphaSet = false;
+				}	
+			}
+		}
+		
+		public function validTile( x:int, y:int ):Boolean
+		{
+			if( x >= 0 && x < _board.tileMatrix.length )
+			{
+				if( y >= 0 && y < _board.tileMatrix[x].length )
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		public function distanceTwoPoints(x1:Number, x2:Number,  y1:Number, y2:Number):Number 
+		{
+			var dx:Number = x1-x2;
+			var dy:Number = y1-y2;
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+		
+		public function lightTile( origX:int, origY:int ): void 
+		{
+			var checkDistance:int = 10;
+			var maxDistance:int = 8;
+			var oscAmount:Number = 3.0;
+			var origTile:TileBackground = _board.tileMatrix[origX][origY];
+			
+			for( var x:int = origX - checkDistance; x < origX + checkDistance; x++ )
+			{
+				for( var y:int = origY - checkDistance; y < origY + checkDistance; y++ )
+				{
+					if( validTile( x, y ) )
+					{
+						
+						var distance:Number = distanceTwoPoints( origX, x, origY, y );
+						if( distance < maxDistance )
+						{
+							var tile:TileBackground = _board.tileMatrix[x][y];
+							var osc:Number = (1 + Math.sin( time * oscAmount ) );										
+							var alpha:Number = ( 1 - Math.abs( distance / ( maxDistance + osc ) ) );
+							tile.alpha = alpha * alpha * alpha;
+							
+							tile.alphaSet = false;
+						}
+					}
+				}	
+			}
+		}
+		
+		public function kick():void
+		{
+			var startX:int = tileX - 1;
+			var startY:int = tileY - 1;
+			var incrementX:int = startX;
+			var incrementY:int = startY;
+			
+			var ex:Number = 0.03;
+			var explodeDelayArray:Array = new Array(ex*2,ex,0,ex*3,ex*8,ex*7,ex*4,ex*5,ex*6);
+			
+			FlxG.play(SndSlash,0.35);
+			FlxG.play(SndSlashBacking,0.25);
+			
+			for( var i:int = 0; i < 3; i++ )
+			{
+				for( var j:int = 0; j < 3; j++ )
+				{
+					if( incrementX >= 0 && incrementX < _board.tileMatrix.length )
+					{
+						if( incrementY >= 0 && incrementY < _board.tileMatrix[incrementX].length )
+						{
+							var tile:TileBackground = _board.tileMatrix[incrementX][incrementY];
+							
+							// Create explosion
+							var explosion:Explosion = new Explosion(tile.x,tile.y,explodeDelayArray[(i*3) + j]);
+							PlayState.groupPlayerBehind.add(explosion);
+						}
+					}
+					incrementY += 1;
+				}
+				incrementX += 1;
+				incrementY = startY;
+			}
+		}
+		
+		public function updateZOrdering():void
+		{
+			var rightX:int = tileX + 1;
+			var downY:int = tileY + 1;
+			var behind:Boolean = false;
+			if( rightX < _board.tileMatrix.length )
+			{
+				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
+			}
+			
+			if( downY < _board.tileMatrix.length )
+			{
+				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
+			}
+			
+			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
+			{
+				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
+			}
+			
+			if( behind )
+			{
+				PlayState.groupPlayer.remove( this );
+				PlayState.groupPlayerBehind.add( this );
+			}
+			else
+			{
+				PlayState.groupPlayerBehind.remove( this );
+				PlayState.groupPlayer.add( this );
+			}
+		}
+		
+		public function updateMovement():void
 		{			
+			var moveToX:Number = moveTo.x;
+			var moveToY:Number = moveTo.y;
+			
+			if( x > moveToX )
+				x -= 2 * speed;
+			else if ( x < moveToX )
+				x += 2 * speed;
+			
+			if( y > moveToY )
+				y -= 1 * speed;
+			else if ( y < moveToY )
+				y += 1 * speed;
+			
+			if( x == moveToX && y == moveToY )
+				moving = false;
+		}
+		
+		public function setTilePosition( x:int, y:int ):void
+		{
+			tileX = x;
+			tileY = y;
+			
+			var tile:TileBackground = _board.tileMatrix[tileX][tileY];	
+			this.x = tile.x;
+			this.y = tile.y;
+			
+			resetTiles();
+			lightTile( x, y );
+			
 			super.update();
-
+		}
+	
+		public function updateWasd():void 
+		{
+			wasd.y = y - 76;
+			wasd.x = x;
+			
+			if( moving || startedMoving )
+			{
+				if( wasd.alpha > 0.0 )
+				{
+					wasd.alpha -= 0.05;		
+				}
+				else
+				{
+					wasd.alpha = 0;
+				}
+				startedMoving = true;
+			}
+			else
+			{
+				if( wasdBounceTime <= 0 )
+				{
+					wasdBounceTime = 0.02;
+					if( wasdBounceToggle )
+					{
+						wasd.y += 1;
+						wasdBounceToggle = false;
+					}
+					else
+					{
+						wasd.y -= 1;
+						wasdBounceToggle = true;
+					}
+				}
+				else
+				{
+					wasdBounceTime -= FlxG.elapsed;
+				}
+			}
+		}
+		
+		public function updateSpace():void 
+		{
+			space.y = y - 76;
+			space.x = x;
+			
+			if( !startedMoving )
+			{
+				space.visible = false;
+				return;
+			}
+			
+			space.visible = true;
+			
+			if( startedKick )
+			{
+				space.alpha -= 0.05;		
+			}
+			else
+			{
+				if( spaceBounceTime <= 0 )
+				{
+					spaceBounceTime = 0.02;
+					if( wasdBounceToggle )
+					{
+						space.y += 1;
+						spaceBounceToggle = false;
+					}
+					else
+					{
+						space.y -= 1;
+						spaceBounceToggle = true;
+					}
+				}
+				else
+				{
+					spaceBounceTime -= FlxG.elapsed;
+				}
+			}
+		}
+		
+		override public function update():void
+		{	
+			time += FlxG.elapsed;
+			
 			if( startTime > 0 )
 			{
 				startTime -= FlxG.elapsed;
@@ -64,70 +350,66 @@ package
 			
 			if( roundOver )
 			{
-				play("idle");
+				play( "idle" );
 				return;
 			}
 
-			if( landing ) 
+			updateWasd();
+			updateSpace();
+			
+			super.update();			
+
+			updateZOrdering();
+			
+			// Lighting
+			resetTiles();
+			lightTile( tileX, tileY );
+			
+			if( moving )
 			{
-				play("land");
-				if(finished)
+				updateMovement();
+				return;
+			}
+			
+			if( kicking )
+			{
+				startedKick = true;
+				if( finished )
 				{
-					landing = false;					
+					kicking = false;
 				}
 				return;
-			}	
-			
-			// MOVEMENT Left, Right
-			acceleration.x = 0;
-			if(FlxG.keys.LEFT || FlxG.keys.A)
-			{
-				facing = LEFT;
-				acceleration.x -= drag.x;
-			}
-			else if(FlxG.keys.RIGHT || FlxG.keys.D)
-			{
-				facing = RIGHT;
-				acceleration.x += drag.x;
 			}
 			
-			// MOVEMENT Jump
-//			if( FlxG.keys.UP || FlxG.keys.W)
-//			{
-//				if( !velocity.y && !jumping )
-//				{
-//					play("jump");
-//					velocity.y = -jumpPower;
-//				}
-//				jumping = true;
-//			}
-//			else
-//			{
-//				jumping = false;
-//			}
-			
-			// Animation
-			if( !velocity.y )
+			if( FlxG.keys.SPACE )
 			{
-				if(velocity.x == 0)
-				{
-					play("idle");
-				}
-				else
-				{
-					play("run");
-				}
+				kick();
+				kicking = true;
+				play( "kick" );
 			}
-
-			// Landing
-			if( lastVelocityY != 0 && velocity.y == 0 )
+			else if(FlxG.keys.LEFT )
 			{
-				landing = true;
-				lastVelocityY = 0;		
+				play( "walk" );
+				moveToTile( tileX - 1, tileY );
+			}
+			else if(FlxG.keys.RIGHT )
+			{
+				play( "walk" );
+				moveToTile( tileX + 1, tileY );
+			}
+			else if(FlxG.keys.UP )
+			{
+				play( "walk" );
+				moveToTile( tileX, tileY - 1);
+			}
+			else if(FlxG.keys.DOWN )
+			{
+				play( "walk" );
+				moveToTile( tileX, tileY + 1);
 			}
 			else
 			{
-				lastVelocityY = velocity.y;
+				play( "idle" );
 			}
 		}
 	}

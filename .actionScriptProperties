@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="FlixelTemplate.as" projectUUID="9b8470bb-659a-4ab0-a17f-38d5c3e97567" version="11">
+<actionScriptProperties analytics="false" mainApplicationPath="LudumDare26.as" projectUUID="9b8470bb-659a-4ab0-a17f-38d5c3e97567" version="11">
   <compiler additionalCompilerArguments="-locale en_US" advancedTelemetry="false" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
       <compilerSourcePathEntry kind="1" linkType="1" path="/Users/travischen/Flash/Flixel"/>
@@ -34,11 +34,10 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="FlixelTemplate.as"/>
+    <application path="LudumDare26.as"/>
   </applications>
   <modules/>
   <workers/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>
-

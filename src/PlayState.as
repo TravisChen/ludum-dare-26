@@ -6,8 +6,10 @@ package
 	{
 		public static var _currLevel:Level;
 		
+		public static var groupLowest:FlxGroup;
 		public static var groupBackground:FlxGroup;
-		public static var groupTilemap:FlxGroup;
+		public static var groupPlayerBehind:FlxGroup;
+		public static var groupBoard:FlxGroup;
 		public static var groupCollects:FlxGroup;
 		public static var groupPlayer:FlxGroup;
 		public static var groupForeground:FlxGroup;
@@ -16,18 +18,22 @@ package
 		{
 			super();
 
+			groupLowest = new FlxGroup;
 			groupBackground = new FlxGroup;
-			groupTilemap = new FlxGroup;
+			groupPlayerBehind = new FlxGroup;
+			groupBoard = new FlxGroup;
 			groupPlayer = new FlxGroup;
 			groupCollects = new FlxGroup;
 			groupForeground = new FlxGroup;
 			
 			// Create the level
-			var currLevelClass:Class = levelArray[FlixelTemplate.currLevelIndex];
+			var currLevelClass:Class = levelArray[LudumDare26.currLevelIndex];
 			_currLevel = new currLevelClass( groupBackground );
 			
+			this.add(groupLowest);
 			this.add(groupBackground);
-			this.add(groupTilemap);
+			this.add(groupPlayerBehind);
+			this.add(groupBoard);
 			this.add(groupPlayer);
 			this.add(groupCollects);
 			this.add(groupForeground);
@@ -36,9 +42,9 @@ package
 		override public function update():void
 		{			
 			// Camera
-			if( _currLevel.player != null )
+			if( _currLevel.finn != null )
 			{
-				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_PLATFORMER);
+				FlxG.camera.follow(_currLevel.finn, FlxCamera.STYLE_PLATFORMER);
 				FlxG.camera.width = FlxG.width;
 				FlxG.camera.setBounds(0,0,_currLevel.levelSizeX,_currLevel.levelSizeY);
 			}
@@ -57,10 +63,10 @@ package
 		
 		public function nextLevel():void
 		{
-			FlixelTemplate.currLevelIndex++;
-			if( FlixelTemplate.currLevelIndex > levelArray.length - 1 )
+			LudumDare26.currLevelIndex++;
+			if( LudumDare26.currLevelIndex > levelArray.length - 1 )
 			{
-				FlixelTemplate.currLevelIndex = 0;
+				LudumDare26.currLevelIndex = 0;
 			}
 			FlxG.switchState(new PlayState());
 		}

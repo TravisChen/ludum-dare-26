@@ -12,7 +12,7 @@ package
 		]
 		
 		public function BasePlayState():void
-		{
+		{	
 		}
 	}
 }
