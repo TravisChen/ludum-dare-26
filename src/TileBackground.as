@@ -4,6 +4,7 @@ package
 	
 	public class TileBackground extends FlxSprite
 	{
+		[Embed(source='../data/tile-empty.png')] private var ImgTileEmpty:Class;
 		[Embed(source='../data/tile-ground.png')] private var ImgTileGround:Class;
 		
 		public var type:int;
@@ -26,9 +27,20 @@ package
 			height = 32;
 			offset.x = 0;
 			offset.y = 0;
-			alpha = 0.0;
+			alpha = 1.0;
 			
-			loadGraphic(ImgTileGround, true, true, width, height);
+			switch( tileType )
+			{
+				case 0:
+					loadGraphic(ImgTileEmpty, true, true, width, height);
+					break;
+				case 1:
+					loadGraphic(ImgTileGround, true, true, width, height);
+					break;
+				default:
+					break;
+			}
+			
 			type = tileType;
 		}
 		

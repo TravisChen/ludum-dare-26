@@ -32,8 +32,8 @@ package
 			
 			this.add(groupLowest);
 			this.add(groupBackground);
-			this.add(groupPlayerBehind);
 			this.add(groupBoard);
+			this.add(groupPlayerBehind);
 			this.add(groupPlayer);
 			this.add(groupCollects);
 			this.add(groupForeground);
@@ -42,9 +42,9 @@ package
 		override public function update():void
 		{			
 			// Camera
-			if( _currLevel.finn != null )
+			if( _currLevel.player != null )
 			{
-				FlxG.camera.follow(_currLevel.finn, FlxCamera.STYLE_PLATFORMER);
+				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_PLATFORMER);
 				FlxG.camera.width = FlxG.width;
 				FlxG.camera.setBounds(0,0,_currLevel.levelSizeX,_currLevel.levelSizeY);
 			}

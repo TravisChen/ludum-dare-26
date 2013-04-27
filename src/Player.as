@@ -47,7 +47,7 @@ package
 			_board = board;
 			
 			super(X,Y);
-			loadGraphic(ImgPlayer,true,true,48,38);
+			loadGraphic(ImgPlayer,true,true,45,39);
 			
 			alphaArray = new Array(1.0, 0.75, 0.25, 0.1);
 			
@@ -55,9 +55,9 @@ package
 			setTilePosition( x, y );
 			
 			// Bounding box tweaks
-			width = 48;
-			height = 38;
-			offset.x = 14;
+			width = 45;
+			height = 39;
+			offset.x = 12;
 			offset.y = 30;
 			
 			// WASD
@@ -82,11 +82,12 @@ package
 		
 		public function moveToTile( x:int, y:int ):void
 		{
-			if( x >= 0 && x < _board.tileMatrix.length )
+			if( validTile( x, y ) )
 			{
-				if( y >= 0 && y < _board.tileMatrix[x].length )
+				var tile:TileBackground = _board.tileMatrix[x][y];
+				
+				if( tile.type != 0 )
 				{
-					var tile:TileBackground = _board.tileMatrix[x][y];	
 					tileX = x;
 					tileY = y;
 					moveTo = tile;
@@ -104,6 +105,7 @@ package
 					var tile:TileBackground = _board.tileMatrix[x][y];
 					tile.alpha = 0.0;
 					tile.alphaSet = false;
+					tile.visible = false;
 				}	
 			}
 		}
@@ -131,7 +133,11 @@ package
 		public function lightTile( origX:int, origY:int ): void 
 		{
 			var checkDistance:int = 10;
-			var maxDistance:int = 8;
+			var maxDistance:int = 4;
+			if( kicking )
+			{
+				maxDistance = 10;
+			}
 			var oscAmount:Number = 3.0;
 			var origTile:TileBackground = _board.tileMatrix[origX][origY];
 			
@@ -148,7 +154,8 @@ package
 							var tile:TileBackground = _board.tileMatrix[x][y];
 							var osc:Number = (1 + Math.sin( time * oscAmount ) );										
 							var alpha:Number = ( 1 - Math.abs( distance / ( maxDistance + osc ) ) );
-							tile.alpha = alpha * alpha * alpha;
+							tile.visible = true;
+							tile.alpha = Math.pow(alpha, 3);
 							
 							tile.alphaSet = false;
 						}
@@ -180,9 +187,12 @@ package
 						{
 							var tile:TileBackground = _board.tileMatrix[incrementX][incrementY];
 							
-							// Create explosion
-							var explosion:Explosion = new Explosion(tile.x,tile.y,explodeDelayArray[(i*3) + j]);
-							PlayState.groupPlayerBehind.add(explosion);
+							if( tile.type != 0 )
+							{
+								// Create explosion
+								var explosion:Explosion = new Explosion(tile.x,tile.y,explodeDelayArray[(i*3) + j]);
+								PlayState.groupPlayerBehind.add(explosion);
+							}
 						}
 					}
 					incrementY += 1;
@@ -192,37 +202,37 @@ package
 			}
 		}
 		
-		public function updateZOrdering():void
-		{
-			var rightX:int = tileX + 1;
-			var downY:int = tileY + 1;
-			var behind:Boolean = false;
-			if( rightX < _board.tileMatrix.length )
-			{
-				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
-			}
-			
-			if( downY < _board.tileMatrix.length )
-			{
-				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
-			}
-			
-			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
-			{
-				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
-			}
-			
-			if( behind )
-			{
-				PlayState.groupPlayer.remove( this );
-				PlayState.groupPlayerBehind.add( this );
-			}
-			else
-			{
-				PlayState.groupPlayerBehind.remove( this );
-				PlayState.groupPlayer.add( this );
-			}
-		}
+//		public function updateZOrdering():void
+//		{
+//			var rightX:int = tileX + 1;
+//			var downY:int = tileY + 1;
+//			var behind:Boolean = false;
+//			if( rightX < _board.tileMatrix.length )
+//			{
+//				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
+//			}
+//			
+//			if( downY < _board.tileMatrix.length )
+//			{
+//				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
+//			}
+//			
+//			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
+//			{
+//				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
+//			}
+//			
+//			if( behind )
+//			{
+//				PlayState.groupPlayer.remove( this );
+//				PlayState.groupPlayerBehind.add( this );
+//			}
+//			else
+//			{
+//				PlayState.groupPlayerBehind.remove( this );
+//				PlayState.groupPlayer.add( this );
+//			}
+//		}
 		
 		public function updateMovement():void
 		{			
@@ -359,8 +369,6 @@ package
 			
 			super.update();			
 
-			updateZOrdering();
-			
 			// Lighting
 			resetTiles();
 			lightTile( tileX, tileY );
@@ -387,22 +395,22 @@ package
 				kicking = true;
 				play( "kick" );
 			}
-			else if(FlxG.keys.LEFT )
+			else if(FlxG.keys.UP )
 			{
 				play( "walk" );
 				moveToTile( tileX - 1, tileY );
 			}
-			else if(FlxG.keys.RIGHT )
+			else if(FlxG.keys.DOWN )
 			{
 				play( "walk" );
 				moveToTile( tileX + 1, tileY );
 			}
-			else if(FlxG.keys.UP )
+			else if(FlxG.keys.LEFT )
 			{
 				play( "walk" );
 				moveToTile( tileX, tileY - 1);
 			}
-			else if(FlxG.keys.DOWN )
+			else if(FlxG.keys.RIGHT )
 			{
 				play( "walk" );
 				moveToTile( tileX, tileY + 1);

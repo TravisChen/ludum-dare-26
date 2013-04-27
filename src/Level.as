@@ -4,7 +4,7 @@ package    {
 	
 	public class Level {
 		
-		public var finn:Player;
+		public var player:Player;
 		
 		public var levelSizeX:Number = 0;
 		public var levelSizeY:Number = 0;

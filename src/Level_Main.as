@@ -40,8 +40,8 @@ package    {
 			board = new Board();
 			
 			// Create finn
-			finn = new Player(16,16,board);
-			PlayState.groupPlayer.add(finn);
+			player = new Player(0,0,board);
+			PlayState.groupPlayer.add(player);
 	
 			// Timer
 			startTime = 1.0;
@@ -157,15 +157,7 @@ package    {
 		{
 			FlxG.music.stop();
 
-			PlayState._currLevel.finn.roundOver = true;
-			
-			for( var x:int = 0; x < board.tileMatrix.length; x++ )
-			{
-				for( var y:int = 0; y < board.tileMatrix[x].length; y++ )
-				{
-					var tile:TileBackground = board.tileMatrix[x][y];
-				}
-			}
+			PlayState._currLevel.player.roundOver = true;
 			
 			roundEndPointsText.visible = true;
 			roundEndForeground.visible = true;
