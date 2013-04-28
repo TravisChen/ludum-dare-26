@@ -1,6 +1,8 @@
 package
 {
-	import org.flixel.*;
+	import org.flixel.FlxEmitter;
+	import org.flixel.FlxG;
+	import org.flixel.FlxSprite;
 	
 	public class Enemy extends FlxSprite
 	{
@@ -21,8 +23,14 @@ package
 		public var tileY:Number;
 		private var moveTo:TileBackground;
 		private var moving:Boolean = false;
-		private var speed:Number = 0.2;
+		private var speed:Number = 0.5;
 		private var direction:Number = 0.0;
+		private var stuck:int = 0;
+		
+		private var stuckThreshold:int = 1;
+		private var strayThreshold:int = 5;
+		private var startX:int = 0;
+		private var startY:int = 0;
 		
 		private var _player:Player;
 		private var lastTile:TileBackground = null;
@@ -39,6 +47,8 @@ package
 			loadGraphic(ImgEnemy,true,true,27,27);
 			
 			// Move player to Tile
+			startX = X;
+			startY = Y;
 			setTilePosition( x, y );
 			
 			// Bounding box tweaks
@@ -48,7 +58,8 @@ package
 			offset.y = 15;
 			alpha = 1.0;
 			
-			addAnimation("walk", [0,1], 5);
+			addAnimation("walk_forward", [0], 5);
+			addAnimation("walk_backward", [1], 5);
 		}
 
 		public function moveToTile( x:int, y:int ):void
@@ -63,57 +74,14 @@ package
 					tileY = y;
 					moveTo = tile;
 					moving = true;
+					stuck = 0;
 				}
 				
 				lastLastTile = lastTile;
 				lastTile = tile;
 			}
 		}
-		
-//		public function updateZOrdering():void
-//		{
-//			var rightX:int = tileX + 1;
-//			var downY:int = tileY + 1;
-//			var behind:Boolean = false;
-//			if( rightX < _board.tileMatrix.length )
-//			{
-//				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
-//				if( rightTile.isChain() )
-//				{
-//					behind = true;
-//				}
-//			}
-//			
-//			if( downY < _board.tileMatrix.length )
-//			{
-//				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
-//				if( downTile.isChain() )
-//				{
-//					behind = true;
-//				}
-//			}
-//			
-//			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
-//			{
-//				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
-//				if( cornerTile.isChain() )
-//				{
-//					behind = true;
-//				}
-//			}
-//			
-//			if( behind )
-//			{
-//				PlayState.groupPlayer.remove( this );
-//				PlayState.groupPlayerBehind.add( this );
-//			}
-//			else
-//			{
-//				PlayState.groupPlayerBehind.remove( this );
-//				PlayState.groupPlayer.add( this );
-//			}
-//		}
-//		
+			
 		public function updateMovement():void
 		{		
 			var moveToX:Number = moveTo.x;
@@ -157,12 +125,30 @@ package
 				var tile:TileBackground = _board.tileMatrix[x][y];	
 				if( tile.moveableTile() )
 				{
-					if( lastLastTile && lastLastTile != tile )
+					if( Math.abs( x - startX ) < strayThreshold &&  Math.abs( y - startY ) < strayThreshold )
 					{
-						moveSafe = true;
+						if( tile.alpha < 0.1 )
+						{
+							if( stuck < stuckThreshold )
+							{
+								if( lastLastTile == null )
+								{
+									moveSafe = true;
+								}
+								else if ( lastLastTile != tile )
+								{
+									moveSafe = true;
+								}
+							}
+							else
+							{ 
+								moveSafe = true;
+							}
+						}
 					}
 				}
 			}
+			
 			return moveSafe;
 		}
 		
@@ -181,7 +167,7 @@ package
 			return nextMoveSafe;
 		}
 		
-		public function findSafeMove():void
+		public function findSafeMove():Boolean
 		{
 			var originalDirection:int = direction;
 			
@@ -241,31 +227,50 @@ package
 						{
 							direction = 1;
 						}
+						
+						if( !nextMoveSafe() )
+						{
+							stuck++;
+							return false;
+						}
 					}
 				}
-			}		
+			}	
+			
+			return true;
 		}
 		
-		private function moveTowardsPlayer():void
+		private function moveTowardsPlayer():Boolean
 		{
-			if( this.tileX > _player.tileX )
+			if( stuck < stuckThreshold )
 			{
-				direction = 0;
+				if( this.tileX > _player.tileX )
+				{
+					direction = 0;
+				}
+				else if( this.tileX < _player.tileX  )
+				{
+					direction = 1;
+				}
+				else if( this.tileY > _player.tileY )
+				{
+					direction = 2;		
+				}
+				else if ( this.tileY < _player.tileY )
+				{
+					direction = 3;
+				}
 			}
-			else if( this.tileX < _player.tileX  )
+			else
 			{
-				direction = 1;
-			}
-			else if( this.tileY > _player.tileY )
-			{
-				direction = 2;		
-			}
-			else if ( this.tileY < _player.tileY )
-			{
-				direction = 3;
+				direction = Math.floor(FlxG.random()*3);
 			}
 			
-			findSafeMove();
+			if( findSafeMove() )
+			{
+				return true;
+			}
+			return false;
 		}
 		
 		override public function update():void
@@ -282,39 +287,41 @@ package
 				return;
 			}
 		
-			super.update();
-			
-			// Lighting
-//			_board.lightTile( tileX, tileY, 2, false );
-			
-			moveTowardsPlayer();
-
 			if( moving )
 			{
 				updateMovement();
 				return;
 			}
 
-			if( direction == 0 )
+			if( moveTowardsPlayer() )
 			{
-				play( "walk" );
-				moveToTile( tileX - 1, tileY );
+				if( direction == 0 )
+				{
+					play( "walk_backward" );
+					facing = RIGHT;
+					moveToTile( tileX - 1, tileY );
+				}
+				else if( direction == 1 )
+				{
+					play( "walk_forward" );
+					facing = RIGHT;
+					moveToTile( tileX + 1, tileY );
+				}
+				else if( direction == 2 )
+				{
+					play( "walk_backward" );
+					facing = LEFT;
+					moveToTile( tileX, tileY - 1);
+				}
+				else if( direction == 3 )
+				{
+					play( "walk_forward" );
+					facing = LEFT;
+					moveToTile( tileX, tileY + 1);
+				}
 			}
-			else if( direction == 1 )
-			{
-				play( "walk" );
-				moveToTile( tileX + 1, tileY );
-			}
-			else if( direction == 2 )
-			{
-				play( "walk" );
-				moveToTile( tileX, tileY - 1);
-			}
-			else if( direction == 3 )
-			{
-				play( "walk" );
-				moveToTile( tileX, tileY + 1);
-			}
+			
+			super.update();
 		}
 	}
 }

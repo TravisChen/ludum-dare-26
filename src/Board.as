@@ -18,6 +18,7 @@ package    {
 		public var widthInTiles:int;
 		
 		public var time:Number = 0.0;
+		private var _player:Player = null;
 
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Ground.txt',mimeType="application/octet-stream")] private var TxtMap:Class;
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Enemies.txt',mimeType="application/octet-stream")] private var TxtEnemies:Class;
@@ -33,8 +34,31 @@ package    {
 			resetTiles();
 			
 			time += FlxG.elapsed;
+			
+			// Lighting
+			if( _player != null )
+			{
+				lightTile( _player.tileX, _player.tileY, 4, _player.kicking );
+			}
+			
+			// Lamp lighting
+			for( var x:int = 0; x < this.tileMatrix.length; x++ )
+			{
+				for( var y:int = 0; y < this.tileMatrix[x].length; y++ )
+				{
+					var tile:TileBackground = this.tileMatrix[x][y];
+					if( tile.type == 4 )
+					{
+						lightTile( x, y, 5, false );
+					}
+				}
+			}
 		}
 		
+		public function setPlayer( player:Player ):void
+		{
+			_player = player;
+		}
 		
 		public function createEnemies( player:Player ):void
 		{
@@ -155,7 +179,7 @@ package    {
 			var maxDistance:int = lightAmount;
 			if( kicking )
 			{
-				maxDistance = maxDistance*2;
+				maxDistance = 9;
 			}
 			var oscAmount:Number = 3.0;
 			var origTile:TileBackground = this.tileMatrix[origX][origY];

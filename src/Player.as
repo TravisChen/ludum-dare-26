@@ -19,7 +19,6 @@ package
 		public var foreground:Boolean = true;
 		
 		public var time:Number = 0.0;
-		public var playerLightAmount:int = 4;
 		
 		private var _board:Board;
 		public var tileX:Number;
@@ -29,7 +28,7 @@ package
 		private var startedMoving:Boolean = false;
 		private var startedKick:Boolean = false;
 		private var speed:Number = 2.0;
-		private var kicking:Boolean = false;
+		public var kicking:Boolean = false;
 		
 		public var wasd:FlxSprite;
 		public var wasdFadeOutTime:Number = 0;
@@ -48,7 +47,7 @@ package
 			_board = board;
 			
 			super(X,Y);
-			loadGraphic(ImgPlayer,true,true,45,39);
+			loadGraphic(ImgPlayer,true,true,50,50);
 			
 			alphaArray = new Array(1.0, 0.75, 0.25, 0.1);
 			
@@ -56,10 +55,10 @@ package
 			setTilePosition( x, y );
 			
 			// Bounding box tweaks
-			width = 45;
-			height = 39;
-			offset.x = 12;
-			offset.y = 30;
+			width = 50;
+			height = 50;
+			offset.x = 13;
+			offset.y = 40;
 			
 			// WASD
 			wasd = new FlxSprite(0,0);
@@ -73,15 +72,17 @@ package
 			space.alpha = 1;
 			PlayState.groupForeground.add(space);
 			
-			addAnimation("idle", [0]);
-			addAnimation("walk", [0], 20);
+			addAnimation("idle_forward", [0]);
+			addAnimation("walk_forward", [0], 20);
+			addAnimation("idle_backward", [1]);
+			addAnimation("walk_backward", [1], 20);
 			addAnimation("kick", [0], 20, false );
 			
 			// Start time
 			startTime = 0.0;
 		}
 		
-		public function moveToTile( x:int, y:int ):void
+		public function moveToTile( x:int, y:int ):Boolean
 		{
 			if( _board.validTile( x, y ) )
 			{
@@ -93,8 +94,11 @@ package
 					tileY = y;
 					moveTo = tile;
 					moving = true;
+					
+					return true;
 				}
 			}
+			return false;
 		}
 		
 		public function kick():void
@@ -132,38 +136,6 @@ package
 			}
 		}
 		
-		public function updateZOrdering():void
-		{
-			var rightX:int = tileX + 1;
-			var downY:int = tileY + 1;
-			var behind:Boolean = false;
-			if( rightX < _board.tileMatrix.length )
-			{
-				var rightTile:TileBackground = _board.tileMatrix[rightX][tileY];	
-			}
-			
-			if( downY < _board.tileMatrix.length )
-			{
-				var downTile:TileBackground = _board.tileMatrix[tileX][downY];	
-			}
-			
-			if( rightX < _board.tileMatrix.length && downY < _board.tileMatrix.length )
-			{
-				var cornerTile:TileBackground = _board.tileMatrix[rightX][downY];	
-			}
-			
-			if( behind )
-			{
-				PlayState.groupPlayer.remove( this );
-				PlayState.groupPlayerBehind.add( this );
-			}
-			else
-			{
-				PlayState.groupPlayerBehind.remove( this );
-				PlayState.groupPlayer.add( this );
-			}
-		}
-		
 		public function updateMovement():void
 		{			
 			var moveToX:Number = moveTo.x;
@@ -196,8 +168,6 @@ package
 			var tile:TileBackground = _board.tileMatrix[tileX][tileY];	
 			this.x = tile.x;
 			this.y = tile.y;
-			
-			_board.lightTile( x, y, playerLightAmount, false );
 			
 			super.update();
 		}
@@ -316,9 +286,6 @@ package
 						
 			super.update();			
 
-			// Lighting
-			_board.lightTile( tileX, tileY, playerLightAmount, kicking );
-			
 			if( moving )
 			{
 				updateMovement();
@@ -335,6 +302,8 @@ package
 				return;
 			}
 			
+			var doMove:Boolean = false;
+			
 			if( FlxG.keys.SPACE )
 			{
 				kick();
@@ -343,23 +312,67 @@ package
 			}
 			else if(FlxG.keys.UP )
 			{
-				play( "walk" );
-				moveToTile( tileX - 1, tileY );
+				if( !moveToTile( tileX - 1, tileY ) )
+				{
+					if( moveToTile( tileX, tileY - 1) )
+					{
+						play( "walk_backward" );
+						facing = LEFT;
+					}
+				}
+				else
+				{
+					play( "walk_backward" );
+					facing = RIGHT;
+				}
 			}
 			else if(FlxG.keys.DOWN )
 			{
-				play( "walk" );
-				moveToTile( tileX + 1, tileY );
+				if( !moveToTile( tileX + 1, tileY ) )
+				{
+					if( moveToTile( tileX, tileY + 1) )
+					{
+						play( "walk_forward" );
+						facing = LEFT;
+					}
+				}
+				else
+				{
+					play( "walk_forward" );
+					facing = RIGHT;
+				}
 			}
 			else if(FlxG.keys.LEFT )
 			{
-				play( "walk" );
-				moveToTile( tileX, tileY - 1);
+				if( !moveToTile( tileX, tileY - 1) )
+				{
+					if( moveToTile( tileX + 1, tileY ) )
+					{
+						play( "walk_forward" );
+						facing = RIGHT;
+					}
+				}
+				else
+				{
+					play( "walk_backward" );
+					facing = LEFT;
+				}
 			}
 			else if(FlxG.keys.RIGHT )
 			{
-				play( "walk" );
-				moveToTile( tileX, tileY + 1);
+				if( !moveToTile( tileX, tileY + 1) )
+				{
+					if( moveToTile( tileX - 1, tileY ) )
+					{
+						play( "walk_backward" );
+						facing = RIGHT;
+					}
+				}
+				else
+				{
+					play( "walk_forward" );
+					facing = LEFT;
+				}
 			}
 			else
 			{

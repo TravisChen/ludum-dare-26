@@ -76,13 +76,6 @@ package
 		
 		override public function update():void
 		{
-			if( type == 4 )
-			{
-				if( _board )
-				{
-					_board.lightTile( _xIndex, _yIndex, 5, false );
-				}
-			}
 			super.update();
 		}
 	}

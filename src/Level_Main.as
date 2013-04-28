@@ -48,6 +48,7 @@ package    {
 			player = new Player(0,0,board);
 			PlayState.groupBoardSort.add(player);
 			board.createEnemies(player);
+			board.setPlayer(player);
 
 			// Timer
 			startTime = 1.0;
