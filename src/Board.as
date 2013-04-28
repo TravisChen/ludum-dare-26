@@ -41,6 +41,34 @@ package
 					if( tile.type == 4 )
 					{
 						lightTile( x, y, 4, false );
+						if( Math.abs(_player.tileX - x) <= 3 )
+						{
+							if( Math.abs(_player.tileY - y) <= 3 )
+							{
+								switch( Math.floor( FlxG.random() * 3 ) )
+								{
+									case 0:
+									{
+										_player.lastLightPostX = x - 1;
+										_player.lastLightPostY = y + 1;
+										break;
+									}
+										
+									case 1:
+									{
+										_player.lastLightPostX = x + 1;
+										_player.lastLightPostY = y - 1;
+										break;
+									}
+									case 2:
+									{
+										_player.lastLightPostX = x + 1;
+										_player.lastLightPostY = y + 1;
+										break;
+									}
+								}
+							}
+						}
 					}
 				}
 			}

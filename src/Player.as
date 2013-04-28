@@ -26,7 +26,7 @@ package
 		private var moving:Boolean = false;
 		private var startedMoving:Boolean = false;
 		private var startedKick:Boolean = false;
-		private var speed:Number = 2.0;
+		private var speed:Number = 1.1;
 		public var kicking:Boolean = false;
 		private var forward:Boolean = true;
 	
@@ -36,6 +36,11 @@ package
 		public var lightDecrement:Number = 0.05;
 		public var lightIncrement:Number = 0.25;
 		public var light:Number = lightCharged;
+		
+		public var playerDeadTime:Number = 1.0;
+		public var playerDeadTimer:Number = 0.0;
+		public var playerInactiveTime:Number = 1.0;
+		public var playerInactiveTimer:Number = 0.0;
 
 		public var wasd:FlxSprite;
 		public var wasdFadeOutTime:Number = 0;
@@ -49,6 +54,8 @@ package
 		public var alphaArray:Array;
 		
 		public var collected:Boolean = false;
+		public var lastLightPostX:int = 0;
+		public var lastLightPostY:int = 0;
 		
 		public function Player( X:int, Y:int, board:Board )
 		{
@@ -81,9 +88,9 @@ package
 			PlayState.groupForeground.add(space);
 			
 			addAnimation("idle_forward", [0]);
-			addAnimation("walk_forward", [1,2,3,4,5,6], 15);
+			addAnimation("walk_forward", [6,5,4,3,2,1], 10);
 			addAnimation("idle_backward", [7]);
-			addAnimation("walk_backward", [7], 20);
+			addAnimation("walk_backward", [8,9,10,11,12,13], 10);
 			addAnimation("kick", [0], 20, false );
 			
 			// Start time
@@ -105,6 +112,54 @@ package
 					
 					return true;
 				}
+			}
+			return false;
+		}
+		
+		public function respawn():void 
+		{
+			// Create explosion
+			var poofDie:Poof = new Poof(this.x,this.y+1);
+			PlayState.groupBoardSort.add(poofDie);
+			
+			playerDeadTimer = playerDeadTime;
+			playerInactiveTimer = playerInactiveTime;	
+			
+			visible = false;
+			space.visible = false;
+			wasd.visible = false;
+		}
+		
+		public function updateRespawn():Boolean
+		{
+			if( playerDeadTimer > 0.0 )
+			{
+				playerDeadTimer -= FlxG.elapsed;
+				if( playerDeadTimer <= 0.0 )
+				{
+					setTilePosition( lastLightPostX, lastLightPostY );
+					
+					visible = true;
+					space.visible = true;
+					wasd.visible = true;
+					playerDeadTimer = 0;
+					
+					// Create explosion
+					var poofRespwan:Poof = new Poof(this.x,this.y+1);
+					PlayState.groupBoardSort.add(poofRespwan);
+					
+					play( "idle_forward" );
+				}
+				return true;
+			}
+			else if ( playerInactiveTimer > 0.0 )
+			{
+				playerInactiveTimer -= FlxG.elapsed;
+				if( playerInactiveTimer <= 0.0 )
+				{
+					playerInactiveTimer = 0.0;
+				}
+				return true;
 			}
 			return false;
 		}
@@ -164,11 +219,13 @@ package
 			else if ( y < moveToY )
 				y += 1 * speed;
 			
-			if( x > moveToX - 1.0 && x < moveToX + 1.0 )
+			if( x > moveToX - speed && x < moveToX + speed )
 			{
-				if( y > moveToY - 1.0 && y < moveToY + 1.0 ) 
+				if( y > moveToY - speed && y < moveToY + speed ) 
 				{
 					moving = false;
+					x = moveToX;
+					y = moveToY;
 				}
 			}
 		}
@@ -181,6 +238,9 @@ package
 			var tile:TileBackground = _board.tileMatrix[tileX][tileY];	
 			this.x = tile.x;
 			this.y = tile.y;
+			
+			moveTo = tile;
+			moving = false;
 			
 			super.update();
 		}
@@ -309,6 +369,11 @@ package
 		override public function update():void
 		{	
 			time += FlxG.elapsed;
+			
+			if( updateRespawn() )
+			{
+				return;
+			}
 			
 			if( startTime > 0 )
 			{

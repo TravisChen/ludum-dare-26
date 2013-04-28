@@ -275,6 +275,11 @@ package
 		
 		override public function update():void
 		{	
+			if( tileX == _player.tileX && tileY == _player.tileY && _player.playerInactiveTimer <= 0 )
+			{
+				_player.respawn();
+			}
+			
 			if( startTime > 0 )
 			{
 				startTime -= FlxG.elapsed;
