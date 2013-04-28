@@ -10,6 +10,7 @@ package
 		public const BOARD_TILE_WIDTH:uint = 24;
 		public const BOARD_TILE_HEIGHT:uint = 24;
 		public const MAX_COLLECTS:uint = 4;
+		public const LOOKUP_BORDER:uint = 20;
 		
 		public var heightInTiles:int;
 		public var widthInTiles:int;
@@ -31,40 +32,43 @@ package
 			resetTiles();
 			
 			time += FlxG.elapsed;
-
+			
 			// Lamp lighting
-			for( var x:int = 0; x < this.tileMatrix.length; x++ )
+			for( var x:int = _player.tileX - LOOKUP_BORDER; x < _player.tileX + LOOKUP_BORDER; x++ )
 			{
-				for( var y:int = 0; y < this.tileMatrix[x].length; y++ )
+				for( var y:int = _player.tileY - LOOKUP_BORDER; y < _player.tileY + LOOKUP_BORDER; y++ )
 				{
-					var tile:TileBackground = this.tileMatrix[x][y];
-					if( tile.type == 4 )
+					if( validTile (x,y) )
 					{
-						lightTile( x, y, 4, false );
-						if( Math.abs(_player.tileX - x) <= 3 )
+						var tile:TileBackground = this.tileMatrix[x][y];
+						if( tile.type == 4 )
 						{
-							if( Math.abs(_player.tileY - y) <= 3 )
+							lightTile( x, y, 4, false );
+							if( Math.abs(_player.tileX - x) <= 3 )
 							{
-								switch( Math.floor( FlxG.random() * 3 ) )
+								if( Math.abs(_player.tileY - y) <= 3 )
 								{
-									case 0:
+									switch( Math.floor( FlxG.random() * 3 ) )
 									{
-										_player.lastLightPostX = x - 1;
-										_player.lastLightPostY = y + 1;
-										break;
-									}
-										
-									case 1:
-									{
-										_player.lastLightPostX = x + 1;
-										_player.lastLightPostY = y - 1;
-										break;
-									}
-									case 2:
-									{
-										_player.lastLightPostX = x + 1;
-										_player.lastLightPostY = y + 1;
-										break;
+										case 0:
+										{
+											_player.lastLightPostX = x - 1;
+											_player.lastLightPostY = y + 1;
+											break;
+										}
+											
+										case 1:
+										{
+											_player.lastLightPostX = x + 1;
+											_player.lastLightPostY = y - 1;
+											break;
+										}
+										case 2:
+										{
+											_player.lastLightPostX = x + 1;
+											_player.lastLightPostY = y + 1;
+											break;
+										}
 									}
 								}
 							}
@@ -203,13 +207,16 @@ package
 		
 		public function resetTiles():void
 		{
-			for( var x:int = 0; x < this.tileMatrix.length; x++ )
+			for( var x:int = _player.tileX - LOOKUP_BORDER; x < _player.tileX + LOOKUP_BORDER; x++ )
 			{
-				for( var y:int = 0; y < this.tileMatrix[x].length; y++ )
+				for( var y:int = _player.tileY - LOOKUP_BORDER; y < _player.tileY + LOOKUP_BORDER; y++ )
 				{
-					var tile:TileBackground = this.tileMatrix[x][y];
-					tile.alpha = 0.0;
-					tile.visible = false;
+					if( validTile (x,y) )
+					{
+						var tile:TileBackground = this.tileMatrix[x][y];
+						tile.alpha = 0.0;
+						tile.visible = false;
+					}
 				}	
 			}
 		}

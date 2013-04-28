@@ -28,13 +28,14 @@ package
 		private var stuck:int = 0;
 		
 		private var stuckThreshold:int = 1;
-		private var strayThreshold:int = 5;
+		private var strayThreshold:int = 10;
 		private var startX:int = 0;
 		private var startY:int = 0;
 		
 		private var _player:Player;
 		private var lastTile:TileBackground = null;
 		private var lastLastTile:TileBackground = null;
+		private var forward:Boolean = true;
 		
 		private var particle:FlxEmitter;
 		
@@ -44,7 +45,7 @@ package
 			_player = player;
 			
 			super(X,Y);
-			loadGraphic(ImgEnemy,true,true,27,27);
+			loadGraphic(ImgEnemy,true,true,34,30);
 			
 			// Move player to Tile
 			startX = X;
@@ -52,14 +53,16 @@ package
 			setTilePosition( x, y );
 			
 			// Bounding box tweaks
-			width = 27;
-			height = 27;
-			offset.x = -2;
-			offset.y = 15;
+			width = 34;
+			height = 30;
+			offset.x = 0;
+			offset.y = 18;
 			alpha = 1.0;
 			
-			addAnimation("walk_forward", [0], 5);
-			addAnimation("walk_backward", [1], 5);
+			addAnimation("idle_forward", [0]);
+			addAnimation("walk_forward", [6,5,4,3,2,1], 8);
+			addAnimation("idle_backward", [7]);
+			addAnimation("walk_backward", [8,9,10,11,12,13], 8);
 		}
 
 		public function moveToTile( x:int, y:int ):void
@@ -273,9 +276,18 @@ package
 			return false;
 		}
 		
+		public function distanceTwoPoints(x1:Number, x2:Number,  y1:Number, y2:Number):Number 
+		{
+			var dx:Number = x1-x2;
+			var dy:Number = y1-y2;
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+		
 		override public function update():void
 		{	
-			if( tileX == _player.tileX && tileY == _player.tileY && _player.playerInactiveTimer <= 0 )
+//			_board.lightTile( tileX, tileY, 3, false );
+			
+			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 2.0 && _player.playerInactiveTimer <= 0.0 )
 			{
 				_player.respawn();
 			}
@@ -303,26 +315,41 @@ package
 				if( direction == 0 )
 				{
 					play( "walk_backward" );
+					forward = false;
 					facing = RIGHT;
 					moveToTile( tileX - 1, tileY );
 				}
 				else if( direction == 1 )
 				{
 					play( "walk_forward" );
+					forward = true;
 					facing = RIGHT;
 					moveToTile( tileX + 1, tileY );
 				}
 				else if( direction == 2 )
 				{
 					play( "walk_backward" );
+					forward = false;
 					facing = LEFT;
 					moveToTile( tileX, tileY - 1);
 				}
 				else if( direction == 3 )
 				{
 					play( "walk_forward" );
+					forward = true;
 					facing = LEFT;
 					moveToTile( tileX, tileY + 1);
+				}
+			}
+			else
+			{
+				if( forward )
+				{
+					play( "idle_forward" );
+				}
+				else
+				{
+					play( "idle_backward" );
 				}
 			}
 			

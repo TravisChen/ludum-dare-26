@@ -50,9 +50,9 @@ package
 			// Camera
 			if( _currLevel.player != null )
 			{
-				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_PLATFORMER);
+				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_TOPDOWN);
 				FlxG.camera.width = FlxG.width;
-				FlxG.camera.setBounds(0,0,_currLevel.levelSizeX,_currLevel.levelSizeY);
+				FlxG.camera.height = FlxG.height;
 			}
 			
 			// Update level
