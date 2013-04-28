@@ -50,7 +50,7 @@ package
 			// Camera
 			if( _currLevel.player != null )
 			{
-				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_TOPDOWN);
+				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_LOCKON);
 				FlxG.camera.width = FlxG.width;
 				FlxG.camera.height = FlxG.height;
 			}

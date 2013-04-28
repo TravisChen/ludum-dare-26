@@ -40,6 +40,8 @@ package    {
 		
 		public var rainEmitter:FlxEmitter;
 		
+		public var playMusic:Boolean = false;
+		
 		public function Level_Main( group:FlxGroup ) {
 			
 			levelSizeX = 1024;
@@ -71,13 +73,6 @@ package    {
 			pointsText.setFormat(null,32,TEXT_COLOR,"right");
 			pointsText.scrollFactor.x = pointsText.scrollFactor.y = 0;
 //			PlayState.groupBackground.add(pointsText);
-			
-//			var backgroundSprite:FlxSprite;
-//			backgroundSprite = new FlxSprite(0,0);
-//			backgroundSprite.loadGraphic(ImgBackground, true, true, levelSizeX, levelSizeY);	
-//			PlayState.groupLowest.add(backgroundSprite);
-
-			FlxG.playMusic(SndSong,0.4);
 			
 			// Round end
 			roundEnd = false;
@@ -176,6 +171,12 @@ package    {
 		
 		override public function update():void
 		{
+			if( !playMusic )
+			{
+				FlxG.playMusic(SndSong,0.4);
+				playMusic = true;
+			}
+			
 			rainEmitter.x = player.x - FlxG.width/6;
 			rainEmitter.y = player.y - FlxG.height/2;
 			
