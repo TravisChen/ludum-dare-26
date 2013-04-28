@@ -6,6 +6,7 @@ package
 	{
 		[Embed(source='../data/tile-empty.png')] private var ImgTileEmpty:Class;
 		[Embed(source='../data/tile-ground.png')] private var ImgTileGround:Class;
+		[Embed(source='../data/tile-ground-top.png')] private var ImgTileGroundTop:Class;
 		[Embed(source='../data/tile-crate.png')] private var ImgTileCrate:Class;
 		[Embed(source='../data/tile-lightpost.png')] private var ImgTileLightPost:Class;
 		

@@ -60,7 +60,7 @@ package
 		public var collected:Boolean = false;
 		public var lastLightPostX:int = 0;
 		public var lastLightPostY:int = 0;
-		
+
 		public function Player( X:int, Y:int, board:Board )
 		{
 			_board = board;
@@ -134,7 +134,7 @@ package
 			space.visible = false;
 			wasd.visible = false;
 			
-			FlxG.play(SndExplode, 0.1);
+			FlxG.play(SndExplode, 0.15);
 		}
 		
 		public function updateRespawn():Boolean
@@ -431,7 +431,7 @@ package
 				kick();
 				kicking = true;
 				play( "kick" );
-				FlxG.play( SndThunder, 0.1 );
+				FlxG.play( SndThunder, 0.15 );
 			}
 			else if(FlxG.keys.UP )
 			{

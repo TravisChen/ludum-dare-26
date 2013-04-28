@@ -127,7 +127,7 @@ package
 				{
 					if( Math.abs( x - startX ) < strayThreshold &&  Math.abs( y - startY ) < strayThreshold )
 					{
-						if( tile.alpha < 0.1 )
+						if( tile.alpha < 0.1 || ( _player.light <= _player.lightMin && !_player.kicking) )
 						{
 							if( stuck < stuckThreshold )
 							{
