@@ -35,7 +35,7 @@ package
 		private var forward:Boolean = true;
 	
 		// Light
-		public var lightCharged:Number = 10.0;
+		public var lightCharged:Number = 12.0;
 		public var lightMin:Number = 2.0;
 		public var lightDecrement:Number = 0.05;
 		public var lightIncrement:Number = 0.25;

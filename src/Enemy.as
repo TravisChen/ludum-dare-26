@@ -287,7 +287,7 @@ package
 		{	
 //			_board.lightTile( tileX, tileY, 3, false );
 			
-			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 2.0 && _player.playerInactiveTimer <= 0.0 )
+			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 1.0 && _player.playerInactiveTimer <= 0.0 )
 			{
 				_player.respawn();
 			}

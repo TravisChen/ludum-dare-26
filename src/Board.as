@@ -7,6 +7,7 @@ package
 		
 		// Tiles
 		public var tileMatrix:Array; 
+		public var fireArray:Array;
 		public const BOARD_TILE_WIDTH:uint = 24;
 		public const BOARD_TILE_HEIGHT:uint = 24;
 		public const MAX_COLLECTS:uint = 4;
@@ -32,6 +33,21 @@ package
 			resetTiles();
 			
 			time += FlxG.elapsed;
+			
+			for( var i:int = 0; i < fireArray.length; i++)
+			{
+				var fire:Fire = fireArray[i];
+				if( fire.tileX < _player.tileX + LOOKUP_BORDER && fire.tileX > _player.tileX - LOOKUP_BORDER )
+				{
+					if( fire.tileY < _player.tileY + LOOKUP_BORDER && fire.tileY > _player.tileY - LOOKUP_BORDER )
+					{
+						if( fire.explode )
+						{
+							lightTile( fire.tileX, fire.tileY, 3, false );
+						}
+					}
+				}
+			}
 			
 			// Lamp lighting
 			for( var x:int = _player.tileX - LOOKUP_BORDER; x < _player.tileX + LOOKUP_BORDER; x++ )
@@ -124,6 +140,7 @@ package
 		public function createSpawns( player:Player ):void
 		{
 			var mapData:String = new TxtSpawns;
+			fireArray = new Array();
 			
 			//Figure out the map dimensions based on the data string
 			var columns:Array;
@@ -146,6 +163,12 @@ package
 					{
 						var collect:Collect = new Collect(x,y,this,player);
 						PlayState.groupBoardSort.add(collect);
+					}
+					else if( columns[y] == 7 || columns[y] == 8 || columns[y] == 9 || columns[y] == 10 || columns[y] == 11 )
+					{
+						var fire:Fire = new Fire(x,y, this, player, ( ( columns[y] - 6 ) / 5 ) * 0.75 );
+						PlayState.groupBoardSort.add(fire);
+						fireArray.push( fire );
 					}
 
 				}
@@ -244,7 +267,7 @@ package
 		
 		public function lightTile( origX:int, origY:int, lightAmount:int, kicking:Boolean ): void 
 		{
-			var checkDistance:int = 10;
+			var checkDistance:int = 12;
 			var maxDistance:int = lightAmount;
 			if( kicking )
 			{
