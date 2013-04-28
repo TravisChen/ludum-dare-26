@@ -32,7 +32,7 @@ package
 			groupForeground = new FlxGroup;
 			
 			// Create the level
-			var currLevelClass:Class = levelArray[LudumDare26.currLevelIndex];
+			var currLevelClass:Class = levelArray[Moonshine.currLevelIndex];
 			_currLevel = new currLevelClass( groupBackground );
 			
 			this.add(groupLowest);
@@ -69,10 +69,10 @@ package
 		
 		public function nextLevel():void
 		{
-			LudumDare26.currLevelIndex++;
-			if( LudumDare26.currLevelIndex > levelArray.length - 1 )
+			Moonshine.currLevelIndex++;
+			if( Moonshine.currLevelIndex > levelArray.length - 1 )
 			{
-				LudumDare26.currLevelIndex = 0;
+				Moonshine.currLevelIndex = 0;
 			}
 			FlxG.switchState(new PlayState());
 		}

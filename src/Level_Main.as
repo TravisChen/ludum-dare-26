@@ -38,16 +38,16 @@ package    {
 		
 		public function Level_Main( group:FlxGroup ) {
 			
-			levelSizeX = 1280;
-			levelSizeY = 800;
+			levelSizeX = 1024;
+			levelSizeY = 640;
 
 			// Create board
 			board = new Board();
 			
 			// Create player
-			player = new Player(0,0,board);
+			player = board.createPlayer();
 			PlayState.groupBoardSort.add(player);
-			board.createEnemies(player);
+			board.createSpawns(player);
 			board.setPlayer(player);
 
 			// Timer

@@ -1,10 +1,7 @@
-package    {
-	
-	import flash.geom.Rectangle;
+package    
+{
 	
 	import org.flixel.FlxG;
-	import org.flixel.FlxTilemap;
-	import org.flixel.system.FlxTile;
 	
 	public class Board {
 		
@@ -21,7 +18,7 @@ package    {
 		private var _player:Player = null;
 
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Ground.txt',mimeType="application/octet-stream")] private var TxtMap:Class;
-		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Enemies.txt',mimeType="application/octet-stream")] private var TxtEnemies:Class;
+		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Spawns.txt',mimeType="application/octet-stream")] private var TxtSpawns:Class;
 		
 		public function Board()
 		{
@@ -34,13 +31,7 @@ package    {
 			resetTiles();
 			
 			time += FlxG.elapsed;
-			
-			// Lighting
-			if( _player != null )
-			{
-				lightTile( _player.tileX, _player.tileY, 4, _player.kicking );
-			}
-			
+
 			// Lamp lighting
 			for( var x:int = 0; x < this.tileMatrix.length; x++ )
 			{
@@ -53,6 +44,14 @@ package    {
 					}
 				}
 			}
+			
+			// Lighting
+			if( _player != null )
+			{
+				_player.updateLight();
+				lightTile( _player.tileX, _player.tileY, _player.light, _player.kicking );
+			}
+			
 		}
 		
 		public function setPlayer( player:Player ):void
@@ -60,9 +59,11 @@ package    {
 			_player = player;
 		}
 		
-		public function createEnemies( player:Player ):void
+		public function createPlayer():Player
 		{
-			var mapData:String = new TxtEnemies;
+			var mapData:String = new TxtSpawns;
+			
+			var player:Player;
 			
 			//Figure out the map dimensions based on the data string
 			var columns:Array;
@@ -76,10 +77,43 @@ package    {
 				columns = rows[x].split(",");
 				for( var y:int = 0; y < columns.length; y++)
 				{
-					if( columns[y] != 0 )
+					if( columns[y] == 5)
+					{
+						player = new Player(x,y,this);
+						PlayState.groupBoardSort.add(player);
+					}
+					
+				}
+			}
+			
+			return player;
+		}
+		
+		public function createSpawns( player:Player ):void
+		{
+			var mapData:String = new TxtSpawns;
+			
+			//Figure out the map dimensions based on the data string
+			var columns:Array;
+			var rows:Array = mapData.split("\n");
+			var column:uint;
+			
+			var emptyTile:TileBackground = new TileBackground( 0, 0, 0, 0, 0, this);
+			
+			for( var x:int = 0; x < rows.length - 1; x++)
+			{
+				columns = rows[x].split(",");
+				for( var y:int = 0; y < columns.length; y++)
+				{
+					if( columns[y] == 3 )
 					{
 						var enemy:Enemy = new Enemy(x,y,this,player);
 						PlayState.groupBoardSort.add(enemy);
+					}
+					else if( columns[y] == 6 )
+					{
+						var collect:Collect = new Collect(x,y,this,player);
+						PlayState.groupBoardSort.add(collect);
 					}
 
 				}

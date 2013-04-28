@@ -20,8 +20,8 @@ package    {
 			
 			super();
 			
-			levelSizeX = 1280;
-			levelSizeY = 800;
+			levelSizeX = 1024;
+			levelSizeY = 640;
 			
 			startTime = 1.0;
 			

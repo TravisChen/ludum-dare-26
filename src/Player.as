@@ -10,7 +10,6 @@ package
 		[Embed(source='../data/space.png')] private var ImgSpace:Class;
 		[Embed(source = '../data/Audio/slash-alt.mp3')] private var SndSlash:Class;
 		[Embed(source = '../data/Audio/slash.mp3')] private var SndSlashBacking:Class;
-		[Embed(source = '../data/Audio/pie-unveal.mp3')] private var SndPie:Class;
 		
 		public var startTime:Number;
 
@@ -29,7 +28,15 @@ package
 		private var startedKick:Boolean = false;
 		private var speed:Number = 2.0;
 		public var kicking:Boolean = false;
-		
+		private var forward:Boolean = true;
+	
+		// Light
+		public var lightCharged:Number = 10.0;
+		public var lightMin:Number = 2.0;
+		public var lightDecrement:Number = 0.05;
+		public var lightIncrement:Number = 0.25;
+		public var light:Number = lightCharged;
+
 		public var wasd:FlxSprite;
 		public var wasdFadeOutTime:Number = 0;
 		public var wasdBounceTime:Number = 0;
@@ -39,15 +46,16 @@ package
 		public var spaceFadeOutTime:Number = 0;
 		public var spaceBounceTime:Number = 0;
 		public var spaceBounceToggle:Boolean = true;
-		public var collectedFirstPie:Boolean = false;
 		public var alphaArray:Array;
+		
+		public var collected:Boolean = false;
 		
 		public function Player( X:int, Y:int, board:Board )
 		{
 			_board = board;
 			
 			super(X,Y);
-			loadGraphic(ImgPlayer,true,true,50,50);
+			loadGraphic(ImgPlayer,true,true,67,53);
 			
 			alphaArray = new Array(1.0, 0.75, 0.25, 0.1);
 			
@@ -55,10 +63,10 @@ package
 			setTilePosition( x, y );
 			
 			// Bounding box tweaks
-			width = 50;
-			height = 50;
-			offset.x = 13;
-			offset.y = 40;
+			width = 67;
+			height = 53;
+			offset.x = 17;
+			offset.y = 42;
 			
 			// WASD
 			wasd = new FlxSprite(0,0);
@@ -73,9 +81,9 @@ package
 			PlayState.groupForeground.add(space);
 			
 			addAnimation("idle_forward", [0]);
-			addAnimation("walk_forward", [0], 20);
-			addAnimation("idle_backward", [1]);
-			addAnimation("walk_backward", [1], 20);
+			addAnimation("walk_forward", [1,2,3,4,5,6], 15);
+			addAnimation("idle_backward", [7]);
+			addAnimation("walk_backward", [7], 20);
 			addAnimation("kick", [0], 20, false );
 			
 			// Start time
@@ -99,6 +107,11 @@ package
 				}
 			}
 			return false;
+		}
+		
+		public function collect():void
+		{
+			collected = true;
 		}
 		
 		public function kick():void
@@ -264,9 +277,37 @@ package
 			}
 		}
 		
+		public function updateLight():void
+		{
+			var tile:TileBackground = _board.tileMatrix[tileX][tileY];
+			
+			if( tile.alpha == 0 && !collected )
+			{
+				if( light > lightMin )
+				{
+					light -= lightDecrement;
+				}
+				else
+				{
+					light = lightMin;
+				}
+			}
+			else
+			{
+				if( light < lightCharged )
+				{
+					light += lightIncrement;
+				}
+				else
+				{
+					light = lightCharged;
+					collected = false;
+				}
+			}
+		}
+		
 		override public function update():void
 		{	
-			pulse();
 			time += FlxG.elapsed;
 			
 			if( startTime > 0 )
@@ -303,7 +344,7 @@ package
 			}
 			
 			var doMove:Boolean = false;
-			
+
 			if( FlxG.keys.SPACE )
 			{
 				kick();
@@ -317,12 +358,14 @@ package
 					if( moveToTile( tileX, tileY - 1) )
 					{
 						play( "walk_backward" );
+						forward = false;
 						facing = LEFT;
 					}
 				}
 				else
 				{
 					play( "walk_backward" );
+					forward = false;
 					facing = RIGHT;
 				}
 			}
@@ -333,12 +376,14 @@ package
 					if( moveToTile( tileX, tileY + 1) )
 					{
 						play( "walk_forward" );
+						forward = true;
 						facing = LEFT;
 					}
 				}
 				else
 				{
 					play( "walk_forward" );
+					forward = true;
 					facing = RIGHT;
 				}
 			}
@@ -349,12 +394,14 @@ package
 					if( moveToTile( tileX + 1, tileY ) )
 					{
 						play( "walk_forward" );
+						forward = true;
 						facing = RIGHT;
 					}
 				}
 				else
 				{
 					play( "walk_backward" );
+					forward = false;
 					facing = LEFT;
 				}
 			}
@@ -365,18 +412,27 @@ package
 					if( moveToTile( tileX - 1, tileY ) )
 					{
 						play( "walk_backward" );
+						forward = false;
 						facing = RIGHT;
 					}
 				}
 				else
 				{
 					play( "walk_forward" );
+					forward = true;
 					facing = LEFT;
 				}
 			}
 			else
 			{
-				play( "idle" );
+				if( forward )
+				{
+					play( "idle_forward" );
+				}
+				else
+				{
+					play( "idle_backward" );
+				}
 			}
 		}
 	}
