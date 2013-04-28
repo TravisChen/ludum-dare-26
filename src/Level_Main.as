@@ -85,8 +85,8 @@ package    {
 		
 		public function createRain():void {
 			
-			rainEmitter = new FlxEmitter(0, 100, 200);
-			rainEmitter.setSize(FlxG.width/3, 0);
+			rainEmitter = new FlxEmitter(0, 0, 150);
+			rainEmitter.setSize(FlxG.width/4, 0);
 			rainEmitter.setXSpeed(5, 5);
 			rainEmitter.setYSpeed(75, 75);
 			rainEmitter.setRotation(0, 0);
@@ -96,13 +96,32 @@ package    {
 			for (var i:int = 0; i < rainEmitter.maxSize; i++) 
 			{
 				rainDrop = new FlxParticle();
-				rainDrop.makeGraphic(1, 3, 0xFFeed294);
+
+				switch( Helpers.randomNumber( 0, 2 ) )
+				{
+					case 0:
+					{
+						rainDrop.makeGraphic(1, 3, 0xFF7f4468);
+						break;
+					}
+					case 1:
+					{
+						rainDrop.makeGraphic(1, 3, 0xFFa45485);
+						break;
+					}
+					case 2:
+					{
+						rainDrop.makeGraphic(1, 3, 0xFFeed294);
+						break;
+					}
+				}
+				
 				rainDrop.alpha = 0.25 - FlxG.random() * 0.1;
 				rainDrop.visible = false;
 				rainEmitter.add(rainDrop);
 			}
 			
-			rainEmitter.start(false, 3, 0.25);
+			rainEmitter.start(false, 3, 0.1);
 		}
 		
 		public function buildRoundEnd():void {
@@ -177,8 +196,8 @@ package    {
 				playMusic = true;
 			}
 			
-			rainEmitter.x = player.x - FlxG.width/6;
-			rainEmitter.y = player.y - FlxG.height/2;
+			rainEmitter.x = player.x - FlxG.width/8;
+			rainEmitter.y = player.y - FlxG.height/2 - 20;
 			
 			// BG color
 			FlxG.bgColor = 0xFF3a2431;

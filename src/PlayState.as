@@ -52,7 +52,7 @@ package
 			{
 				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_LOCKON);
 				FlxG.camera.width = FlxG.width;
-				FlxG.camera.height = FlxG.height;
+				FlxG.camera.height = FlxG.height + 60;
 			}
 			
 			// Update level

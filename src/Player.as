@@ -39,7 +39,7 @@ package
 		public var lightMin:Number = 2.0;
 		public var lightDecrement:Number = 0.05;
 		public var lightIncrement:Number = 0.25;
-		public var light:Number = lightCharged;
+		public var light:Number = lightMin;
 		
 		public var playerDeadTime:Number = 1.0;
 		public var playerDeadTimer:Number = 0.0;

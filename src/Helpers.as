@@ -8,6 +8,18 @@ package
 		{
 		}
 		
+		static public function randomNumber(min:Number, max:Number, Absolute:Boolean=false):Number
+		{
+			if(!Absolute)
+			{
+				return Math.floor(Math.random() * (1 + max - min) + min);
+			}
+			else
+			{
+				return Math.abs(Math.floor(Math.random() * (1 + max - min) + min));
+			}
+		}
+		
 		static public function scale(sprite:FlxSprite, scale:Number):void	
 		{	
 			sprite.scale.x = sprite.scale.y = scale;
