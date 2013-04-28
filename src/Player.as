@@ -39,7 +39,7 @@ package
 		
 		public var playerDeadTime:Number = 1.0;
 		public var playerDeadTimer:Number = 0.0;
-		public var playerInactiveTime:Number = 1.0;
+		public var playerInactiveTime:Number = 0.25;
 		public var playerInactiveTimer:Number = 0.0;
 
 		public var wasd:FlxSprite;
