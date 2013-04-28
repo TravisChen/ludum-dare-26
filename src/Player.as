@@ -9,7 +9,9 @@ package
 		[Embed(source='../data/wasd.png')] private var ImgWasd:Class;
 		[Embed(source='../data/space.png')] private var ImgSpace:Class;
 		[Embed(source = '../data/Audio/thunder.mp3')] private var SndThunder:Class;
-
+		[Embed(source = '../data/Audio/explode.mp3')] private var SndExplode:Class;
+		[Embed(source = '../data/Audio/drink.mp3')] private var SndDrink:Class;
+		
 		public var startTime:Number;
 
 		public var roundOver:Boolean = false;
@@ -127,6 +129,8 @@ package
 			visible = false;
 			space.visible = false;
 			wasd.visible = false;
+			
+			FlxG.play(SndExplode, 0.1);
 		}
 		
 		public function updateRespawn():Boolean
@@ -166,6 +170,8 @@ package
 		public function collect():void
 		{
 			collected = true;
+			
+			FlxG.play(SndDrink, 1.0);
 		}
 		
 		public function kick():void
