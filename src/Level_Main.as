@@ -1,14 +1,16 @@
 package    {
 		
+	import org.flixel.FlxEmitter;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxParticle;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxText;
 	
 	public class Level_Main extends Level{
 	
 		[Embed(source='../data/roundover.png')] private var ImgRoundEnd:Class;
-		[Embed(source = '../data/Audio/song.mp3')] private var SndSong:Class;
+		[Embed(source = '../data/Audio/rain-loop.mp3')] private var SndSong:Class;
 		[Embed(source = '../data/game-bg.png')] private var ImgBackground:Class;
 		
 		// Points
@@ -35,6 +37,8 @@ package    {
 		public var board:Board;
 		
 		public var enemy:Enemy;
+		
+		public var rainEmitter:FlxEmitter;
 		
 		public function Level_Main( group:FlxGroup ) {
 			
@@ -73,13 +77,37 @@ package    {
 //			backgroundSprite.loadGraphic(ImgBackground, true, true, levelSizeX, levelSizeY);	
 //			PlayState.groupLowest.add(backgroundSprite);
 
-//			FlxG.playMusic(SndSong,1.0);
+			FlxG.playMusic(SndSong,0.25);
 			
 			// Round end
 			roundEnd = false;
 			buildRoundEnd();
 			
 			super();
+			
+			createRain();
+		}
+		
+		public function createRain():void {
+			
+			rainEmitter = new FlxEmitter(0, 100, 200);
+			rainEmitter.setSize(FlxG.width/3, 0);
+			rainEmitter.setXSpeed(5, 5);
+			rainEmitter.setYSpeed(75, 75);
+			rainEmitter.setRotation(0, 0);
+			PlayState.groupForeground.add(rainEmitter);
+			
+			var rainDrop:FlxParticle;
+			for (var i:int = 0; i < rainEmitter.maxSize; i++) 
+			{
+				rainDrop = new FlxParticle();
+				rainDrop.makeGraphic(1, 3, 0xFFeed294);
+				rainDrop.alpha = 0.25 - FlxG.random() * 0.1;
+				rainDrop.visible = false;
+				rainEmitter.add(rainDrop);
+			}
+			
+			rainEmitter.start(false, 3, 0.25);
 		}
 		
 		public function buildRoundEnd():void {
@@ -148,6 +176,9 @@ package    {
 		
 		override public function update():void
 		{
+			rainEmitter.x = player.x - FlxG.width/6;
+			rainEmitter.y = player.y - FlxG.height/2;
+			
 			// BG color
 			FlxG.bgColor = 0xFF3a2431;
 			

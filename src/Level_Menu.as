@@ -1,6 +1,11 @@
 package    {
 	
-	import org.flixel.*;
+	import org.flixel.FlxEmitter;
+	import org.flixel.FlxG;
+	import org.flixel.FlxGroup;
+	import org.flixel.FlxParticle;
+	import org.flixel.FlxSprite;
+	import org.flixel.FlxText;
 	
 	public class Level_Menu extends Level{
 		

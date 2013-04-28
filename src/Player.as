@@ -8,9 +8,8 @@ package
 		[Embed(source='../data/player.png')] private var ImgPlayer:Class;
 		[Embed(source='../data/wasd.png')] private var ImgWasd:Class;
 		[Embed(source='../data/space.png')] private var ImgSpace:Class;
-		[Embed(source = '../data/Audio/slash-alt.mp3')] private var SndSlash:Class;
-		[Embed(source = '../data/Audio/slash.mp3')] private var SndSlashBacking:Class;
-		
+		[Embed(source = '../data/Audio/thunder.mp3')] private var SndThunder:Class;
+
 		public var startTime:Number;
 
 		public var roundOver:Boolean = false;
@@ -415,6 +414,7 @@ package
 				kick();
 				kicking = true;
 				play( "kick" );
+				FlxG.play( SndThunder, 0.1 );
 			}
 			else if(FlxG.keys.UP )
 			{
