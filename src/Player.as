@@ -8,6 +8,9 @@ package
 		[Embed(source='../data/player.png')] private var ImgPlayer:Class;
 		[Embed(source='../data/wasd.png')] private var ImgWasd:Class;
 		[Embed(source='../data/space.png')] private var ImgSpace:Class;
+		
+		[Embed(source = '../data/Audio/VO-01.mp3')] private var SndVO1:Class;
+		
 		[Embed(source = '../data/Audio/thunder.mp3')] private var SndThunder:Class;
 		[Embed(source = '../data/Audio/explode.mp3')] private var SndExplode:Class;
 		[Embed(source = '../data/Audio/drink.mp3')] private var SndDrink:Class;
@@ -119,6 +122,7 @@ package
 		
 		public function respawn():void 
 		{
+			
 			// Create explosion
 			var poofDie:Poof = new Poof(this.x,this.y+1);
 			PlayState.groupBoardSort.add(poofDie);
@@ -265,7 +269,14 @@ package
 				{
 					wasd.alpha = 0;
 				}
-				startedMoving = true;
+				
+				if( !startedMoving )
+				{
+					startedMoving = true;
+					
+					// Test VO play
+					FlxG.play(SndVO1, 1.0);
+				}
 			}
 			else
 			{

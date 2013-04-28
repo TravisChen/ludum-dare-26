@@ -34,7 +34,6 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="Preloader.as"/>
     <application path="Moonshine.as"/>
   </applications>
   <modules/>
