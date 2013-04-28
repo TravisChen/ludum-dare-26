@@ -40,7 +40,7 @@ package
 					var tile:TileBackground = this.tileMatrix[x][y];
 					if( tile.type == 4 )
 					{
-						lightTile( x, y, 5, false );
+						lightTile( x, y, 4, false );
 					}
 				}
 			}
