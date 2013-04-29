@@ -158,6 +158,15 @@ package
 									occupied = true;
 								}
 							}
+							
+							for( var k:int = 0; k < _board.fireArray.length; k++)
+							{
+								var fire:Fire = _board.fireArray[k];
+								if( fire.tileX == x && fire.tileY == y )
+								{
+									occupied = true;
+								}
+							}
 
 							if( !occupied )
 							{

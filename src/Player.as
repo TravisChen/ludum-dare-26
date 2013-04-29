@@ -113,12 +113,12 @@ package
 			space.loadGraphic(ImgSpace, true, true, 32, 32);
 			space.alpha = 1;
 			PlayState.groupForeground.add(space);
-			
-			addAnimation("idle_forward", [0,15]);
+		
+			addAnimation("idle_forward", [0]);
 			addAnimation("walk_forward", [6,5,4,3,2,1], 10);
 			addAnimation("idle_backward", [7]);
 			addAnimation("walk_backward", [8,9,10,11,12,13], 10);
-			addAnimation("kick", [16,17,18,19,20,19,16,15,14], 14, false );
+			addAnimation("kick", [16,17,18,19,20,19,16,15,14], 20, false );
 			
 			// Start time
 			startTime = 0.0;

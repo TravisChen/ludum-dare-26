@@ -4,7 +4,7 @@ package
 	
 	public class Explosion extends FlxSprite
 	{
-		[Embed(source='../data/Explosion.png')] private var ImgExplosion:Class;
+		[Embed(source='../data/light-explosion.png')] private var ImgExplosion:Class;
 		
 		public var explode:Boolean = false;
 		public var explodeDelay:Number;
@@ -33,7 +33,7 @@ package
 			{
 				if( !explode )
 				{
-					alpha = 1;
+					alpha = 0.5;
 					explode = true;
 					play( "explode" );
 				}

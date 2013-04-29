@@ -15,6 +15,8 @@ package
 		public var tileX:int;
 		public var tileY:int;
 		
+		public const LOOKUP_BORDER:uint = 20;
+		
 		public function Fire(X:int,Y:int, board:Board, player:Player, startDelay:Number):void
 		{
 			_board = board;
@@ -49,6 +51,14 @@ package
 		
 		override public function update():void
 		{
+//			if( tileX >= _player.tileX + LOOKUP_BORDER || tileX <= _player.tileX - LOOKUP_BORDER )
+//			{
+//				if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
+//				{
+//					return;
+//				}
+//			}
+			
 			super.update();
 			
 			if( explode )
