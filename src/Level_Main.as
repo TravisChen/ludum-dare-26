@@ -67,7 +67,7 @@ package    {
 		
 		public function createRain():void {
 			
-			rainEmitter = new FlxEmitter(0, 0, 150);
+			rainEmitter = new FlxEmitter(0, 0, 50);
 			rainEmitter.setSize(FlxG.width/4, 0);
 			rainEmitter.setXSpeed(5, 5);
 			rainEmitter.setYSpeed(75, 75);
@@ -103,7 +103,7 @@ package    {
 				rainEmitter.add(rainDrop);
 			}
 			
-			rainEmitter.start(false, 3, 0.1);
+			rainEmitter.start(false, 5, 0.1);
 		}
 		
 		public function buildRoundEnd():void {

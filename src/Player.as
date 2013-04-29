@@ -32,8 +32,6 @@ package
 		[Embed(source = '../data/Audio/explode.mp3')] private var SndExplode:Class;
 		[Embed(source = '../data/Audio/drink.mp3')] private var SndDrink:Class;
 		
-		public var startTime:Number;
-
 		public var roundOver:Boolean = false;
 		public var background:Boolean = false;
 		public var foreground:Boolean = true;
@@ -119,9 +117,6 @@ package
 			addAnimation("idle_backward", [7]);
 			addAnimation("walk_backward", [8,9,10,11,12,13], 10);
 			addAnimation("kick", [16,17,18,19,20,19,16,15,14], 20, false );
-			
-			// Start time
-			startTime = 0.0;
 		}
 		
 		public function playNextVO( farthestX:int ):void
@@ -289,6 +284,11 @@ package
 	
 		public function updateWasd():void 
 		{
+			if( !wasd )
+			{
+				return;
+			}
+			
 			wasd.y = y - 76;
 			wasd.x = x;
 			
@@ -301,6 +301,7 @@ package
 				else
 				{
 					wasd.alpha = 0;
+					wasd.kill();
 				}
 				
 				if( !startedMoving )
@@ -315,7 +316,7 @@ package
 			{
 				if( wasdBounceTime <= 0 )
 				{
-					wasdBounceTime = 0.02;
+					wasdBounceTime = 0.1;
 					if( wasdBounceToggle )
 					{
 						wasd.y += 1;
@@ -336,6 +337,11 @@ package
 		
 		public function updateSpace():void 
 		{
+			if( !space )
+			{
+				return;
+			}
+			
 			space.y = y - 76;
 			space.x = x;
 			
@@ -349,13 +355,17 @@ package
 			
 			if( startedKick )
 			{
-				space.alpha -= 0.05;		
+				space.alpha -= 0.05;
+				if( space.alpha <= 0.0 )
+				{
+					space.kill();
+				}
 			}
 			else
 			{
 				if( spaceBounceTime <= 0 )
 				{
-					spaceBounceTime = 0.02;
+					spaceBounceTime = 0.1;
 					if( wasdBounceToggle )
 					{
 						space.y += 1;
@@ -423,13 +433,7 @@ package
 			{
 				return;
 			}
-			
-			if( startTime > 0 )
-			{
-				startTime -= FlxG.elapsed;
-				return;
-			}
-			
+						
 			if( roundOver )
 			{
 				play( "idle" );

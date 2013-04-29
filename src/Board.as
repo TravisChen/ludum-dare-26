@@ -21,6 +21,8 @@ package
 		
 		public var time:Number = 0.0;
 		private var _player:Player = null;
+		public var oscAmount:Number = 3.0;
+		public var osc:Number = 0.0;
 
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Ground.txt',mimeType="application/octet-stream")] private var TxtMap:Class;
 		[Embed(source='../data/Tilemaps/MapCSV_Moonshine_Spawns.txt',mimeType="application/octet-stream")] private var TxtSpawns:Class;
@@ -36,6 +38,8 @@ package
 			resetTiles();
 			
 			time += FlxG.elapsed;
+			
+			osc = (1 + Math.sin( time * oscAmount ) );
 			
 			for( var i:int = 0; i < fireArray.length; i++)
 			{
@@ -146,7 +150,7 @@ package
 		}
 		
 		public function createSpawns( player:Player ):void
-		{
+		{			
 			var mapData:String = new TxtSpawns;
 			enemyArray = new Array();
 			fireArray = new Array();
@@ -279,30 +283,23 @@ package
 		
 		public function lightTile( origX:int, origY:int, lightAmount:int, kicking:Boolean ): void 
 		{
-			var maxDistance:int = lightAmount;
-			var checkDistance:int = maxDistance;
 			if( kicking )
 			{
-				maxDistance = 9;
-				checkDistance = 9;
+				lightAmount = 9;
 			}
-			var oscAmount:Number = 3.0;
-			var origTile:TileBackground = this.tileMatrix[origX][origY];
-			
-			for( var x:int = origX - checkDistance; x < origX + checkDistance; x++ )
+
+			for( var x:int = origX - lightAmount; x < origX + lightAmount; x++ )
 			{
-				for( var y:int = origY - checkDistance; y < origY + checkDistance; y++ )
+				for( var y:int = origY - lightAmount; y < origY + lightAmount; y++ )
 				{
 					if( validTile( x, y ) )
 					{
-						
 						var distance:Number = distanceTwoPoints( origX, x, origY, y );
-						if( distance < maxDistance )
+						if( distance < lightAmount )
 						{
 							var tile:TileBackground = this.tileMatrix[x][y];
-							var osc:Number = (1 + Math.sin( time * oscAmount ) );										
-							var alpha:Number = ( 1 - Math.abs( distance / ( maxDistance + osc ) ) );
-							var newAlpha:Number = Math.pow(alpha, 3);
+							var alpha:Number = ( 1 - distance / ( lightAmount + osc ) );
+							var newAlpha:Number = Math.pow(alpha, 4);
 							tile.visible = true;
 							
 							if( newAlpha > tile.alpha )
