@@ -325,12 +325,10 @@ package
 		override public function update():void
 		{	
 			if( tileX >= _player.tileX + LOOKUP_BORDER || tileX <= _player.tileX - LOOKUP_BORDER )
-			{
-				if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
-				{
-					return;
-				}
-			}
+				return;
+			
+			if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
+				return;	
 			
 			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 1.0 && _player.playerInactiveTimer <= 0.0 )
 			{

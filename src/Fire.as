@@ -50,14 +50,12 @@ package
 		}
 		
 		override public function update():void
-		{
+		{	
 //			if( tileX >= _player.tileX + LOOKUP_BORDER || tileX <= _player.tileX - LOOKUP_BORDER )
-//			{
-//				if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
-//				{
-//					return;
-//				}
-//			}
+//				return;
+//			
+//			if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
+//				return;	
 			
 			super.update();
 			

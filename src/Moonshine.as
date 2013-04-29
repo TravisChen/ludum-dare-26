@@ -11,7 +11,7 @@ package
 		public function Moonshine()
 		{
 			super(512,320,PlayState,2);
-			forceDebugger = true;
+//			forceDebugger = true;
 		}
 	}
 }

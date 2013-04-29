@@ -114,7 +114,7 @@ package
 			space.alpha = 1;
 			PlayState.groupForeground.add(space);
 		
-			addAnimation("idle_forward", [0]);
+			addAnimation("idle_forward", [21,22,23,24,25,26,27], 10);
 			addAnimation("walk_forward", [6,5,4,3,2,1], 10);
 			addAnimation("idle_backward", [7]);
 			addAnimation("walk_backward", [8,9,10,11,12,13], 10);
