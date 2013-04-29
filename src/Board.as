@@ -64,6 +64,11 @@ package
 							{
 								if( Math.abs(_player.tileY - y) <= 3 )
 								{
+									if( tile.y < _player.farthestLightPosY )
+									{
+										_player.playNextVO( tile.y );
+									}
+									
 									switch( Math.floor( FlxG.random() * 3 ) )
 									{
 										case 0:

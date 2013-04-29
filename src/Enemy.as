@@ -36,6 +36,7 @@ package
 		private var lastTile:TileBackground = null;
 		private var lastLastTile:TileBackground = null;
 		private var forward:Boolean = true;
+		private var attacking:Boolean = false;
 		
 		private var particle:FlxEmitter;
 		
@@ -59,10 +60,12 @@ package
 			offset.y = 18;
 			alpha = 1.0;
 			
-			addAnimation("idle_forward", [0]);
+			addAnimation("idle_forward", [14,15],8);
 			addAnimation("walk_forward", [6,5,4,3,2,1], 8);
-			addAnimation("idle_backward", [7]);
-			addAnimation("walk_backward", [8,9,10,11,12,13], 8);
+			addAnimation("idle_backward", [21,22],8);
+			addAnimation("walk_backward", [7,8,9,10,11,12], 8);
+			addAnimation("attack_forward", [14,15,16,17,18,19,20,14,15,16,17,18,19,20],16, false);
+			addAnimation("attack_backward", [21,22,23,24,25,26,27,21,22,23,24,25,26,27],16, false);
 		}
 
 		public function moveToTile( x:int, y:int ):void
@@ -285,11 +288,29 @@ package
 		
 		override public function update():void
 		{	
-//			_board.lightTile( tileX, tileY, 3, false );
-			
 			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 1.0 && _player.playerInactiveTimer <= 0.0 )
 			{
+				attacking = true;
+				
+				if( forward )
+				{
+					play( "attack_forward" );
+				}
+				else
+				{
+					play( "attack_backward" );
+				}
+				
 				_player.respawn();
+			}
+			
+			if( attacking )
+			{
+				if( finished )
+				{
+					attacking = false;	
+				}
+				return;
 			}
 			
 			if( startTime > 0 )

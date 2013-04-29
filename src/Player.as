@@ -9,7 +9,24 @@ package
 		[Embed(source='../data/wasd.png')] private var ImgWasd:Class;
 		[Embed(source='../data/space.png')] private var ImgSpace:Class;
 		
-		[Embed(source = '../data/Audio/VO-01.mp3')] private var SndVO1:Class;
+		[Embed(source = '../data/Audio/VO/haiku-01.mp3')] private var SndVO1:Class;
+		[Embed(source = '../data/Audio/VO/haiku-02.mp3')] private var SndVO2:Class;
+		[Embed(source = '../data/Audio/VO/haiku-03.mp3')] private var SndVO3:Class;
+		[Embed(source = '../data/Audio/VO/haiku-04.mp3')] private var SndVO4:Class;
+		[Embed(source = '../data/Audio/VO/haiku-05.mp3')] private var SndVO5:Class;
+		[Embed(source = '../data/Audio/VO/haiku-06.mp3')] private var SndVO6:Class;
+		[Embed(source = '../data/Audio/VO/haiku-07.mp3')] private var SndVO7:Class;
+		[Embed(source = '../data/Audio/VO/haiku-08.mp3')] private var SndVO8:Class;
+		[Embed(source = '../data/Audio/VO/haiku-09.mp3')] private var SndVO9:Class;
+		[Embed(source = '../data/Audio/VO/haiku-10.mp3')] private var SndV10:Class;
+		[Embed(source = '../data/Audio/VO/haiku-11.mp3')] private var SndV11:Class;
+		[Embed(source = '../data/Audio/VO/haiku-12.mp3')] private var SndV12:Class;
+		[Embed(source = '../data/Audio/VO/haiku-13.mp3')] private var SndV13:Class;
+		[Embed(source = '../data/Audio/VO/haiku-14.mp3')] private var SndV14:Class;
+		[Embed(source = '../data/Audio/VO/haiku-15.mp3')] private var SndV15:Class;
+		[Embed(source = '../data/Audio/VO/haiku-16.mp3')] private var SndV16:Class;
+		[Embed(source = '../data/Audio/VO/haiku-17.mp3')] private var SndV17:Class;
+		[Embed(source = '../data/Audio/VO/haiku-18.mp3')] private var SndV18:Class;
 		
 		[Embed(source = '../data/Audio/thunder.mp3')] private var SndThunder:Class;
 		[Embed(source = '../data/Audio/explode.mp3')] private var SndExplode:Class;
@@ -55,11 +72,14 @@ package
 		public var spaceFadeOutTime:Number = 0;
 		public var spaceBounceTime:Number = 0;
 		public var spaceBounceToggle:Boolean = true;
-		public var alphaArray:Array;
 		
 		public var collected:Boolean = false;
 		public var lastLightPostX:int = 0;
 		public var lastLightPostY:int = 0;
+		public var farthestLightPosY:int = 0;
+		
+		public var VOArray:Array;
+		public var VOIndex:int = 0;
 
 		public function Player( X:int, Y:int, board:Board )
 		{
@@ -68,8 +88,11 @@ package
 			super(X,Y);
 			loadGraphic(ImgPlayer,true,true,67,53);
 			
-			alphaArray = new Array(1.0, 0.75, 0.25, 0.1);
-			
+			VOArray = new Array(SndVO1, SndVO2, SndVO3, SndVO4, SndVO5,
+								SndVO6, SndVO7, SndVO8, SndVO9, SndV10,
+								SndV11, SndV12, SndV13, SndV14, SndV15,
+								SndV16, SndV17, SndV18);  
+
 			// Move player to Tile
 			setTilePosition( x, y );
 			
@@ -99,6 +122,16 @@ package
 			
 			// Start time
 			startTime = 0.0;
+		}
+		
+		public function playNextVO( farthestY:int ):void
+		{
+			farthestLightPosY = farthestY;
+			if( VOIndex < VOArray.length )
+			{
+				FlxG.play(VOArray[VOIndex], 1.0);
+				VOIndex++;
+			}
 		}
 		
 		public function moveToTile( x:int, y:int ):Boolean
@@ -275,7 +308,7 @@ package
 					startedMoving = true;
 					
 					// Test VO play
-					FlxG.play(SndVO1, 1.0);
+					playNextVO( y );
 				}
 			}
 			else
