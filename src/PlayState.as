@@ -50,9 +50,16 @@ package
 			// Camera
 			if( _currLevel.player != null )
 			{
-				FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_LOCKON);
-				FlxG.camera.width = FlxG.width;
-				FlxG.camera.height = FlxG.height + 60;
+				if( !_currLevel.player.fin )
+				{
+					FlxG.camera.follow(_currLevel.player, FlxCamera.STYLE_LOCKON);
+					FlxG.camera.width = FlxG.width;
+					FlxG.camera.height = FlxG.height + 60;
+				}
+				else
+				{
+					FlxG.camera.active = false;
+				}
 			}
 			
 			// Update level

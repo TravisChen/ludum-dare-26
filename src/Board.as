@@ -40,7 +40,7 @@ package
 			time += FlxG.elapsed;
 			
 			osc = (1 + Math.sin( time * oscAmount ) );
-			
+
 			for( var i:int = 0; i < fireArray.length; i++)
 			{
 				var fire:Fire = fireArray[i];
@@ -64,7 +64,7 @@ package
 					if( validTile (x,y) )
 					{
 						var tile:TileBackground = this.tileMatrix[x][y];
-						if( tile.type == 4 )
+						if( tile.type == 4 || tile.type == 13 )
 						{
 							lightTile( x, y, 4, false );
 							
@@ -107,7 +107,7 @@ package
 			}
 			
 			// Lighting
-			if( _player != null )
+			if( _player != null && _player.light >= 1.0 )
 			{
 				_player.updateLight();
 				lightTile( _player.tileX, _player.tileY, _player.light, _player.kicking );
@@ -285,7 +285,7 @@ package
 		{
 			if( kicking )
 			{
-				lightAmount = 9;
+				lightAmount = _player.kickingLight;
 			}
 
 			for( var x:int = origX - lightAmount; x < origX + lightAmount; x++ )

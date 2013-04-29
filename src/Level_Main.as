@@ -12,7 +12,8 @@ package    {
 		[Embed(source='../data/roundover.png')] private var ImgRoundEnd:Class;
 		[Embed(source = '../data/Audio/rain-loop.mp3')] private var SndSong:Class;
 		[Embed(source = '../data/title.png')] private var ImgTitle:Class;
-
+		[Embed(source = '../data/fin.png')] private var ImgFin:Class;
+		
 		// Round End
 		private var roundEnd:Boolean;
 		private var roundEndContinueText:FlxText;
@@ -33,6 +34,7 @@ package    {
 		public var playMusic:Boolean = false;
 		
 		public var titleSprite:FlxSprite;
+		public var finSprite:FlxSprite;
 		
 		public var startTimer:Number = 1.0;
 		
@@ -55,6 +57,12 @@ package    {
 			titleSprite.loadGraphic(ImgTitle, true, true, levelSizeX, levelSizeY);	
 			titleSprite.scrollFactor.x = titleSprite.scrollFactor.y = 0;
 			PlayState.groupForeground.add(titleSprite);
+			
+			finSprite = new FlxSprite(0,0);
+			finSprite.loadGraphic(ImgFin, true, true, levelSizeX, levelSizeY);	
+			finSprite.scrollFactor.x = finSprite.scrollFactor.y = 0;
+			finSprite.alpha = 0.0;
+			PlayState.groupForeground.add(finSprite);
 			
 			// Round end
 			roundEnd = false;
@@ -132,6 +140,15 @@ package    {
 			{
 				FlxG.playMusic(SndSong,0.4);
 				playMusic = true;
+			}
+			
+			if( player.fin )
+			{
+				finSprite.alpha += 0.01;
+				if( finSprite.alpha >= 1.0 )
+				{
+					finSprite.alpha = 1.0;
+				}
 			}
 			
 			rainEmitter.x = player.x - FlxG.width/8;

@@ -15,8 +15,6 @@ package
 		[Embed(source = '../data/Audio/VO/haiku-04.mp3')] private var SndVO4:Class;
 		[Embed(source = '../data/Audio/VO/haiku-05.mp3')] private var SndVO5:Class;
 		[Embed(source = '../data/Audio/VO/haiku-06.mp3')] private var SndVO6:Class;
-		[Embed(source = '../data/Audio/VO/haiku-07.mp3')] private var SndVO7:Class;
-		[Embed(source = '../data/Audio/VO/haiku-08.mp3')] private var SndVO8:Class;
 		[Embed(source = '../data/Audio/VO/haiku-09.mp3')] private var SndVO9:Class;
 		[Embed(source = '../data/Audio/VO/haiku-10.mp3')] private var SndV10:Class;
 		[Embed(source = '../data/Audio/VO/haiku-11.mp3')] private var SndV11:Class;
@@ -26,7 +24,6 @@ package
 		[Embed(source = '../data/Audio/VO/haiku-15.mp3')] private var SndV15:Class;
 		[Embed(source = '../data/Audio/VO/haiku-16.mp3')] private var SndV16:Class;
 		[Embed(source = '../data/Audio/VO/haiku-17.mp3')] private var SndV17:Class;
-		[Embed(source = '../data/Audio/VO/haiku-18.mp3')] private var SndV18:Class;
 		
 		[Embed(source = '../data/Audio/thunder.mp3')] private var SndThunder:Class;
 		[Embed(source = '../data/Audio/explode.mp3')] private var SndExplode:Class;
@@ -46,11 +43,16 @@ package
 		public var startedMoving:Boolean = false;
 		private var startedKick:Boolean = false;
 		private var speed:Number = 1.1;
+		
 		public var kicking:Boolean = false;
+		public var kickingLight:Number = 10;
+		public var kickingDecrement:Boolean = false;
+		
 		private var forward:Boolean = true;
 	
 		// Light
-		public var lightCharged:Number = 12.0;
+		public var lightCharged:Number = 10.0;
+		public var lightKickCharged:Number = 12.0;
 		public var lightMin:Number = 2.0;
 		public var lightDecrement:Number = 0.05;
 		public var lightIncrement:Number = 0.25;
@@ -78,6 +80,8 @@ package
 		
 		public var VOArray:Array;
 		public var VOIndex:int = 0;
+		
+		public var fin:Boolean = false;
 
 		public function Player( X:int, Y:int, board:Board )
 		{
@@ -87,9 +91,9 @@ package
 			loadGraphic(ImgPlayer,true,true,67,53);
 			
 			VOArray = new Array(SndVO1, SndVO2, SndVO3, SndVO4, SndVO5,
-								SndVO6, SndVO7, SndVO8, SndVO9, SndV10,
+								SndVO6, SndVO9, SndV10,
 								SndV11, SndV12, SndV13, SndV14, SndV15,
-								SndV16, SndV17, SndV18);  
+								SndV16, SndV17);
 
 			// Move player to Tile
 			setTilePosition( x, y );
@@ -117,6 +121,7 @@ package
 			addAnimation("idle_backward", [7]);
 			addAnimation("walk_backward", [8,9,10,11,12,13], 10);
 			addAnimation("kick", [16,17,18,19,20,19,16,15,14], 20, false );
+			addAnimation("fin",[28,28,28,28,28,29,28,28,29], 3);
 		}
 		
 		public function playNextVO( farthestX:int ):void
@@ -141,6 +146,12 @@ package
 					tileY = y;
 					moveTo = tile;
 					moving = true;
+					
+					if( tile.type == 13 )
+					{
+						kick();
+						fin = true;	
+					}
 					
 					return true;
 				}
@@ -400,28 +411,37 @@ package
 		{
 			var tile:TileBackground = _board.tileMatrix[tileX][tileY];
 			
-			if( tile.alpha == 0 && !collected )
+
+			
+			if( !fin )
 			{
-				if( light > lightMin )
+				if( tile.alpha == 0 && !collected )
 				{
-					light -= lightDecrement;
+					if( light > lightMin )
+					{
+						light -= lightDecrement;
+					}
+					else
+					{
+						light = lightMin;
+					}
 				}
 				else
 				{
-					light = lightMin;
+					if( light < lightCharged )
+					{
+						light += lightIncrement;
+					}
+					else
+					{
+						light = lightCharged;
+						collected = false;
+					}
 				}
 			}
 			else
 			{
-				if( light < lightCharged )
-				{
-					light += lightIncrement;
-				}
-				else
-				{
-					light = lightCharged;
-					collected = false;
-				}
+				light -= 0.1;
 			}
 		}
 		
@@ -451,8 +471,35 @@ package
 				return;
 			}
 			
+			if( fin )
+			{
+				play( "fin" );
+				offset.x = 12;
+				y -= 0.4;
+				alpha -= 0.001;
+				return;
+			}
+			
 			if( kicking )
 			{
+				if( !kickingDecrement )
+				{
+					kickingLight += 1.0;
+					if( kickingLight >= lightKickCharged )
+					{
+						kickingDecrement = true;
+						kickingLight = lightKickCharged;
+					}
+				}
+				else
+				{
+					kickingLight -= 1.0;
+					if( kickingLight <= light )
+					{
+						kickingLight = light;
+					}
+				}
+				
 				startedKick = true;
 				if( finished )
 				{
@@ -467,6 +514,8 @@ package
 			{
 				kick();
 				kicking = true;
+				kickingDecrement = false;
+				kickingLight = light;
 				play( "kick" );
 				FlxG.play( SndThunder, 0.15 );
 			}

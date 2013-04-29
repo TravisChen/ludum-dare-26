@@ -7,7 +7,6 @@ package
 	public class Enemy extends FlxSprite
 	{
 		[Embed(source="../data/enemy.png")] private var ImgEnemy:Class;
-		[Embed(source="../data/particle-blood.png")] private var ImgParticle:Class;
 		[Embed(source = '../data/Audio/appear.mp3')] private var SndAppear:Class;
 		[Embed(source = '../data/Audio/destroy.mp3')] private var SndDestroy:Class;
 		[Embed(source = '../data/Audio/stab.mp3')] private var SndStab:Class;
@@ -37,8 +36,6 @@ package
 		private var lastLastTile:TileBackground = null;
 		private var forward:Boolean = true;
 		private var attacking:Boolean = false;
-		
-		private var particle:FlxEmitter;
 
 		public const LOOKUP_BORDER:uint = 20;
 		

@@ -8,7 +8,9 @@ package
 		[Embed(source='../data/tile-ground.png')] private var ImgTileGround:Class;
 		[Embed(source='../data/tile-ground-top.png')] private var ImgTileGroundTop:Class;
 		[Embed(source='../data/tile-crate.png')] private var ImgTileCrate:Class;
+		[Embed(source='../data/tile-crate-big.png')] private var ImgTileCrateBig:Class;
 		[Embed(source='../data/tile-lightpost.png')] private var ImgTileLightPost:Class;
+		[Embed(source='../data/tile-beam.png')] private var ImgTileBeam:Class;
 		
 		public var type:int  = 0;
 		public var baseType:int = -1;
@@ -60,6 +62,20 @@ package
 					offset.y = 104;
 					loadGraphic(ImgTileLightPost, true, true, width, height);
 					break;
+				case 12:
+					width = 64;
+					height = 64;
+					offset.x = 0;
+					offset.y = 40;
+					loadGraphic(ImgTileCrateBig, true, true, width, height);
+					break;
+				case 13:
+					width = 39;
+					height = 281;
+					offset.x = 3;
+					offset.y = 249;
+					loadGraphic(ImgTileBeam, true, true, width, height);
+					break;
 				default:
 					break;
 			}
@@ -69,7 +85,7 @@ package
 		
 		public function moveableTile():Boolean
 		{
-			if( type != 1 )
+			if( type != 1 && type != 13)
 				return false;
 			
 			return true;
