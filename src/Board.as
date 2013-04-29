@@ -60,6 +60,7 @@ package
 						if( tile.type == 4 )
 						{
 							lightTile( x, y, 4, false );
+							
 							if( Math.abs(_player.tileX - x) <= 3 )
 							{
 								if( Math.abs(_player.tileY - y) <= 3 )
@@ -272,11 +273,12 @@ package
 		
 		public function lightTile( origX:int, origY:int, lightAmount:int, kicking:Boolean ): void 
 		{
-			var checkDistance:int = 12;
 			var maxDistance:int = lightAmount;
+			var checkDistance:int = maxDistance;
 			if( kicking )
 			{
 				maxDistance = 9;
+				checkDistance = 9;
 			}
 			var oscAmount:Number = 3.0;
 			var origTile:TileBackground = this.tileMatrix[origX][origY];

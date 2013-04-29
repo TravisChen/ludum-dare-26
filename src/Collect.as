@@ -47,11 +47,17 @@ package
 			
 			play( "idle" );
 			
-			if( _player.tileX == _tileX && _player.tileY == _tileY )
+			if( !collected && _player.tileX == _tileX && _player.tileY == _tileY )
 			{
 				collected = true;
+				visible = false;
 				_player.collect();
-				kill();
+			}
+			
+			if( _player.playerInactiveTimer > 0.0 )
+			{
+				collected = false;
+				visible = true;
 			}
 			super.update();
 		}

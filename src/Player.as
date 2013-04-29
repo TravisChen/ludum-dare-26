@@ -45,7 +45,7 @@ package
 		public var tileY:Number;
 		private var moveTo:TileBackground;
 		private var moving:Boolean = false;
-		private var startedMoving:Boolean = false;
+		public var startedMoving:Boolean = false;
 		private var startedKick:Boolean = false;
 		private var speed:Number = 1.1;
 		public var kicking:Boolean = false;

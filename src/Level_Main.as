@@ -11,21 +11,11 @@ package    {
 	
 		[Embed(source='../data/roundover.png')] private var ImgRoundEnd:Class;
 		[Embed(source = '../data/Audio/rain-loop.mp3')] private var SndSong:Class;
-		[Embed(source = '../data/game-bg.png')] private var ImgBackground:Class;
-		
-		// Points
-		private var pointsText:FlxText;
-		private var lengthText:FlxText;
-		
-		// Timer
-		public var startTime:Number;
-		public var endTime:Number;
-		private var timerText:FlxText;
+		[Embed(source = '../data/title.png')] private var ImgTitle:Class;
 
 		// Round End
 		private var roundEnd:Boolean;
 		private var roundEndContinueText:FlxText;
-		private var roundEndPointsText:FlxText;
 		private var roundEndTitleText:FlxText;
 		private var roundEndForeground:FlxSprite;
 		
@@ -42,10 +32,14 @@ package    {
 		
 		public var playMusic:Boolean = false;
 		
+		public var titleSprite:FlxSprite;
+		
+		public var startTimer:Number = 1.0;
+		
 		public function Level_Main( group:FlxGroup ) {
 			
-			levelSizeX = 1024;
-			levelSizeY = 640;
+			levelSizeX = 512;
+			levelSizeY = 320;
 
 			// Create board
 			board = new Board();
@@ -56,23 +50,11 @@ package    {
 			board.createSpawns(player);
 			board.setPlayer(player);
 
-			// Timer
-			startTime = 1.0;
-			endTime = 3.0;
-			timer = MAX_TIME;
-			
-			points = 0;
-			
-			timerText = new FlxText(0, 0, FlxG.width, "0:00");
-			timerText.setFormat(null,32,TEXT_COLOR,"left");
-			timerText.scrollFactor.x = timerText.scrollFactor.y = 0;
-//			PlayState.groupBackground.add(timerText);
-			
-			// Points
-			pointsText = new FlxText(0, 0, FlxG.width, "0");
-			pointsText.setFormat(null,32,TEXT_COLOR,"right");
-			pointsText.scrollFactor.x = pointsText.scrollFactor.y = 0;
-//			PlayState.groupBackground.add(pointsText);
+			// Create title
+			titleSprite = new FlxSprite(0,0);
+			titleSprite.loadGraphic(ImgTitle, true, true, levelSizeX, levelSizeY);	
+			titleSprite.scrollFactor.x = titleSprite.scrollFactor.y = 0;
+			PlayState.groupForeground.add(titleSprite);
 			
 			// Round end
 			roundEnd = false;
@@ -137,55 +119,11 @@ package    {
 			roundEndContinueText.visible = false;
 			PlayState.groupForeground.add(roundEndContinueText);
 			
-			roundEndPointsText = new FlxText(0, FlxG.height/2 - 30, FlxG.width, "");
-			roundEndPointsText.setFormat(null,64,TEXT_COLOR,"center");
-			roundEndPointsText.scrollFactor.x = roundEndPointsText.scrollFactor.y = 0;	
-			roundEndPointsText.visible = false;
-			PlayState.groupForeground.add(roundEndPointsText);
-			
 			roundEndTitleText = new FlxText(0, FlxG.height/2 - 70, FlxG.width, "ROUND OVER");
 			roundEndTitleText.setFormat(null,32,CONTINUE_COLOR,"center");
 			roundEndTitleText.scrollFactor.x = roundEndTitleText.scrollFactor.y = 0;	
 			roundEndTitleText.visible = false;
 			PlayState.groupForeground.add(roundEndTitleText);
-		}
-		
-		private function updateTimer():void
-		{
-			return; 
-			
-			// Timer
-			var minutes:uint = timer/60;
-			var seconds:uint = timer - minutes*60;
-			if( startTime <= 0 )
-			{
-				timer -= FlxG.elapsed;
-			}
-			else
-			{
-				startTime -= FlxG.elapsed;
-			}
-			
-			// Check round end
-			if( timer <= 0 )
-			{
-				showEndPrompt();
-				if( endTime <= 0 )
-				{
-					checkAnyKey();					
-				}
-				else
-				{
-					endTime -= FlxG.elapsed;
-				}
-				return;
-			}
-			
-			// Update timer text
-			if( seconds < 10 )
-				timerText.text = "" + minutes + ":0" + seconds;
-			else
-				timerText.text = "" + minutes + ":" + seconds;
 		}
 		
 		override public function update():void
@@ -204,14 +142,25 @@ package    {
 			
 			// Update board
 			board.update();
-		
-			// Timer
-			updateTimer();
-
-			// Update points text
-			pointsText.text = "0";
-			roundEndPointsText.text = "" + points;
 			
+			// Start timer
+			if( player.startedMoving && startTimer > 0.0 )
+			{
+				startTimer -= FlxG.elapsed;
+				return;
+			}
+			else
+			{
+				if( startTimer <= 0.0 )
+				{
+					titleSprite.alpha -= 0.025;
+					if( titleSprite.alpha <= 0.0 )
+					{
+						titleSprite.alpha = 0.0;
+					}
+				}
+			}
+		
 			super.update();
 		}
 		
@@ -220,8 +169,7 @@ package    {
 			FlxG.music.stop();
 
 			PlayState._currLevel.player.roundOver = true;
-			
-			roundEndPointsText.visible = true;
+
 			roundEndForeground.visible = true;
 			roundEndTitleText.visible = true;
 		}
