@@ -1,5 +1,6 @@
 package
 {
+	import org.flixel.FlxG;
 	import org.flixel.FlxSprite;
 	
 	public class Collect extends FlxSprite
@@ -8,16 +9,20 @@ package
 	
 		private var _board:Board;
 		private var _player:Player;
-		private var _tileX:int;
-		private var _tileY:int;
+		public var tileX:int;
+		public var tileY:int;
 		public var collected:Boolean;
+		
+		public const COLLECTED_HOLD_TIME:Number = 0.5;
+		public var collectedHoldTime:Number = COLLECTED_HOLD_TIME;
+
 		
 		public function Collect( X:int, Y:int, board:Board, player:Player )
 		{
 			_board = board;
 			_player = player;
-			_tileX = X;
-			_tileY = Y;
+			tileX = X;
+			tileY = Y;
 			
 			super(X,Y);
 			setTilePosition(X,Y);
@@ -42,15 +47,18 @@ package
 		
 		override public function update():void
 		{	
-			var tile:TileBackground = _board.tileMatrix[_tileX][_tileY];
-			alpha = tile.alpha * 2;
+			var tile:TileBackground = _board.tileMatrix[tileX][tileY];
+			
+			if( ! collected )
+			{
+				alpha = tile.alpha * 2;
+			}
 			
 			play( "idle" );
 			
-			if( !collected && _player.tileX == _tileX && _player.tileY == _tileY )
+			if( !collected && _player.tileX == tileX && _player.tileY == tileY )
 			{
 				collected = true;
-				visible = false;
 				_player.collect();
 			}
 			
@@ -58,7 +66,30 @@ package
 			{
 				collected = false;
 				visible = true;
+				collectedHoldTime = COLLECTED_HOLD_TIME;
+				setTilePosition( tileX, tileY );
 			}
+			
+			if( collected )
+			{
+				x = _player.x;
+				
+				if( y > _player.y - 50 )
+				{
+					y -= 5.0;
+				}
+				else
+				{
+					collectedHoldTime -= FlxG.elapsed;
+					if( collectedHoldTime <= 0 )
+					{
+						alpha -= 0.05;
+					}
+				}
+				
+				return;
+			}
+			
 			super.update();
 		}
 	}

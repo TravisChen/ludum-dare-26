@@ -150,6 +150,15 @@ package
 								}
 							}
 							
+							for( var j:int = 0; j < _board.collectArray.length; j++)
+							{
+								var collect:Collect = _board.collectArray[j];
+								if( collect.tileX == x && collect.tileY == y )
+								{
+									occupied = true;
+								}
+							}
+
 							if( !occupied )
 							{
 								if( stuck < stuckThreshold )

@@ -9,6 +9,7 @@ package
 		public var tileMatrix:Array; 
 		public var fireArray:Array;
 		public var enemyArray:Array;
+		public var collectArray:Array;
 		
 		public const BOARD_TILE_WIDTH:uint = 24;
 		public const BOARD_TILE_HEIGHT:uint = 24;
@@ -150,6 +151,7 @@ package
 			var mapData:String = new TxtSpawns;
 			enemyArray = new Array();
 			fireArray = new Array();
+			collectArray = new Array();
 			
 			//Figure out the map dimensions based on the data string
 			var columns:Array;
@@ -173,6 +175,7 @@ package
 					{
 						var collect:Collect = new Collect(x,y,this,player);
 						PlayState.groupBoardSort.add(collect);
+						collectArray.push( collect );
 					}
 					else if( columns[y] == 7 || columns[y] == 8 || columns[y] == 9 || columns[y] == 10 || columns[y] == 11 )
 					{
