@@ -119,7 +119,6 @@ package
 		public function createPlayer():Player
 		{
 			var mapData:String = new TxtSpawns;
-			
 			var player:Player;
 			
 			//Figure out the map dimensions based on the data string
