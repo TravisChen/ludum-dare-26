@@ -8,6 +8,8 @@ package
 		// Tiles
 		public var tileMatrix:Array; 
 		public var fireArray:Array;
+		public var enemyArray:Array;
+		
 		public const BOARD_TILE_WIDTH:uint = 24;
 		public const BOARD_TILE_HEIGHT:uint = 24;
 		public const MAX_COLLECTS:uint = 4;
@@ -43,7 +45,7 @@ package
 					{
 						if( fire.explode )
 						{
-							lightTile( fire.tileX, fire.tileY, 3, false );
+							lightTile( fire.tileX, fire.tileY, 2, false );
 						}
 					}
 				}
@@ -65,9 +67,9 @@ package
 							{
 								if( Math.abs(_player.tileY - y) <= 3 )
 								{
-									if( tile.y < _player.farthestLightPosY )
+									if( x < _player.farthestLightPosX )
 									{
-										_player.playNextVO( tile.y );
+										_player.playNextVO( x );
 									}
 									
 									switch( Math.floor( FlxG.random() * 3 ) )
@@ -146,6 +148,7 @@ package
 		public function createSpawns( player:Player ):void
 		{
 			var mapData:String = new TxtSpawns;
+			enemyArray = new Array();
 			fireArray = new Array();
 			
 			//Figure out the map dimensions based on the data string
@@ -164,6 +167,7 @@ package
 					{
 						var enemy:Enemy = new Enemy(x,y,this,player);
 						PlayState.groupBoardSort.add(enemy);
+						enemyArray.push( enemy );
 					}
 					else if( columns[y] == 6 )
 					{

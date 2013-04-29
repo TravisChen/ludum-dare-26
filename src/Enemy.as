@@ -137,20 +137,36 @@ package
 					{
 						if( tile.alpha < 0.1 || ( _player.light <= _player.lightMin && !_player.kicking) )
 						{
-							if( stuck < stuckThreshold )
+							var occupied:Boolean = false;
+							for( var i:int = 0; i < _board.enemyArray.length; i++)
 							{
-								if( lastLastTile == null )
+								var enemy:Enemy = _board.enemyArray[i];
+								if( this != enemy )
 								{
-									moveSafe = true;
-								}
-								else if ( lastLastTile != tile )
-								{
-									moveSafe = true;
+									if( enemy.tileX == x && enemy.tileY == y )
+									{
+										occupied = true;
+									}
 								}
 							}
-							else
-							{ 
-								moveSafe = true;
+							
+							if( !occupied )
+							{
+								if( stuck < stuckThreshold )
+								{
+									if( lastLastTile == null )
+									{
+										moveSafe = true;
+									}
+									else if ( lastLastTile != tile )
+									{
+										moveSafe = true;
+									}
+								}
+								else
+								{ 
+									moveSafe = true;
+								}
 							}
 						}
 					}

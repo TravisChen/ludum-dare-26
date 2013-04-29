@@ -76,7 +76,7 @@ package
 		public var collected:Boolean = false;
 		public var lastLightPostX:int = 0;
 		public var lastLightPostY:int = 0;
-		public var farthestLightPosY:int = 0;
+		public var farthestLightPosX:int = 0;
 		
 		public var VOArray:Array;
 		public var VOIndex:int = 0;
@@ -124,9 +124,9 @@ package
 			startTime = 0.0;
 		}
 		
-		public function playNextVO( farthestY:int ):void
+		public function playNextVO( farthestX:int ):void
 		{
-			farthestLightPosY = farthestY;
+			farthestLightPosX = farthestX;
 			if( VOIndex < VOArray.length )
 			{
 				FlxG.play(VOArray[VOIndex], 1.0);
@@ -308,7 +308,7 @@ package
 					startedMoving = true;
 					
 					// Test VO play
-					playNextVO( y );
+					playNextVO( tileX );
 				}
 			}
 			else
