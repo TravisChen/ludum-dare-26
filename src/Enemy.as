@@ -36,6 +36,9 @@ package
 		private var lastLastTile:TileBackground = null;
 		private var forward:Boolean = true;
 		private var attacking:Boolean = false;
+		
+		private var stunTimer:Number = 0.0;
+		private var stunTime:Number = 2.0;
 
 		public const LOOKUP_BORDER:uint = 20;
 		
@@ -184,6 +187,10 @@ package
 								}
 							}
 						}
+						else
+						{
+							stunTimer = stunTime;
+						}
 					}
 				}
 			}
@@ -328,6 +335,22 @@ package
 			
 			if( tileY >= _player.tileY + LOOKUP_BORDER || tileY <= _player.tileY - LOOKUP_BORDER )
 			{
+				return;
+			}
+			
+			if( stunTimer > 0 )
+			{
+				stunTimer -= FlxG.elapsed;
+				
+				if( forward )
+				{
+					play( "idle_forward" );
+				}
+				else
+				{
+					play( "idle_backward" );
+				}
+				
 				return;
 			}
 			
