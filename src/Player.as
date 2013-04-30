@@ -519,7 +519,7 @@ package
 				play( "kick" );
 				FlxG.play( SndThunder, 0.15 );
 			}
-			else if(FlxG.keys.UP )
+			else if(FlxG.keys.UP || FlxG.keys.W )
 			{
 				if( !moveToTile( tileX - 1, tileY ) )
 				{
@@ -537,7 +537,7 @@ package
 					facing = RIGHT;
 				}
 			}
-			else if(FlxG.keys.DOWN )
+			else if(FlxG.keys.DOWN || FlxG.keys.S )
 			{
 				if( !moveToTile( tileX + 1, tileY ) )
 				{
@@ -555,7 +555,7 @@ package
 					facing = RIGHT;
 				}
 			}
-			else if(FlxG.keys.LEFT )
+			else if(FlxG.keys.LEFT || FlxG.keys.A )
 			{
 				if( !moveToTile( tileX, tileY - 1) )
 				{
@@ -573,7 +573,7 @@ package
 					facing = LEFT;
 				}
 			}
-			else if(FlxG.keys.RIGHT )
+			else if(FlxG.keys.RIGHT || FlxG.keys.D )
 			{
 				if( !moveToTile( tileX, tileY + 1) )
 				{
