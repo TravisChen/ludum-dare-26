@@ -38,7 +38,7 @@ package
 		private var attacking:Boolean = false;
 		
 		private var stunTimer:Number = 0.0;
-		private var stunTime:Number = 2.0;
+		private var stunTime:Number = 0.5;
 
 		public const LOOKUP_BORDER:uint = 20;
 		
@@ -338,22 +338,6 @@ package
 				return;
 			}
 			
-			if( stunTimer > 0 )
-			{
-				stunTimer -= FlxG.elapsed;
-				
-				if( forward )
-				{
-					play( "idle_forward" );
-				}
-				else
-				{
-					play( "idle_backward" );
-				}
-				
-				return;
-			}
-			
 			if( distanceTwoPoints( tileX, _player.tileX, tileY, _player.tileY ) < 1.0 && _player.playerInactiveTimer <= 0.0 )
 			{
 				attacking = true;
@@ -369,13 +353,30 @@ package
 				
 				_player.respawn();
 			}
-			
+
 			if( attacking )
 			{
 				if( finished )
 				{
 					attacking = false;	
 				}
+				return;
+			}
+
+			
+			if( stunTimer > 0 )
+			{
+				stunTimer -= FlxG.elapsed;
+				
+				if( forward )
+				{
+					play( "idle_forward" );
+				}
+				else
+				{
+					play( "idle_backward" );
+				}
+				
 				return;
 			}
 			

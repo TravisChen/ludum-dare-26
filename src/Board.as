@@ -14,7 +14,7 @@ package
 		public const BOARD_TILE_WIDTH:uint = 24;
 		public const BOARD_TILE_HEIGHT:uint = 24;
 		public const MAX_COLLECTS:uint = 4;
-		public const LOOKUP_BORDER:uint = 20;
+		public const LOOKUP_BORDER:uint = 18;
 		
 		public var heightInTiles:int;
 		public var widthInTiles:int;
